@@ -1,0 +1,208 @@
+﻿body.dark-mode {
+    background-color: #121212;
+    color: #f5f5f5;
+}
+
+    body.dark-mode .navbar {
+        background-color: #1e1e1e;
+        border-bottom: 1px solid #333;
+    }
+
+    body.dark-mode a,
+    body.dark-mode .btn-outline-secondary {
+        color: #f5f5f5;
+    }
+
+        body.dark-mode .btn-outline-secondary:hover {
+            background-color: #333;
+        }
+
+    body.dark-mode .card {
+        background-color: #1e1e1e;
+        border-color: #333;
+        color: #ddd;
+    }
+
+    body.dark-mode .navbar .btn-outline-light {
+        color: #f5f5f5;
+        border-color: #f5f5f5;
+    }
+
+    body.dark-mode .navbar .btn-outline-light:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+        color: #fff;
+    }
+
+    body.dark-mode .btn-outline-light {
+        color: white;
+        border-color: white;
+    }
+
+body:not(.dark-mode) .btn-outline-light {
+    color: #333;
+    border-color: #ccc;
+}
+
+
+body .offcanvas {
+    backdrop-filter: blur(8px);
+    box-shadow: -5px 0 20px rgba(0,0,0,0.4);
+}
+
+.hero-section {
+    min-height: 85vh;
+    background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
+    padding: 5rem 2rem;
+    color: #f5f5f5;
+}
+
+    .hero-section h1 span {
+        background: linear-gradient(to right, #00c6ff, #0072ff);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+.main-content {
+    padding-bottom: 3rem;
+}
+
+.page-full-width .main-content {
+    padding: 0;
+}
+
+.how-it-works i,
+.why-us i {
+    font-size: 2rem;
+}
+
+.card.bg-gradient {
+    background: linear-gradient(to right, #1c1c1c, #2e3a4c);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 0.75rem;
+}
+
+.dashboard-preview .list-group-item {
+    color: #ddd;
+    border-color: rgba(255,255,255,0.1);
+}
+
+
+/* Glass Section */
+
+.glass-login {
+    background: rgba(30, 30, 30, 0.5);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-left: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: -10px 0 30px rgba(0, 0, 0, 0.4);
+    color: #fff;
+}
+
+    .glass-login .form-control {
+        background-color: rgba(255, 255, 255, 0.05);
+        color: white;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        transition: all 0.2s ease;
+    }
+
+        .glass-login .form-control:focus {
+            background-color: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+            color: white;
+        }
+
+    .glass-login .form-check-input {
+        background-color: rgba(255, 255, 255, 0.2);
+        border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .glass-login .btn-close {
+        filter: invert(1);
+    }
+
+.glass-dashboard {
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
+    transition: all 0.3s ease;
+    padding: 2rem;
+}
+
+/* Dark Mode - translucent glass */
+body.dark-mode .glass-dashboard {
+    background: rgba(255, 255, 255, 0.05);
+    color: #f1f1f1;
+}
+
+/* Light Mode - opaque soft white glass */
+body:not(.dark-mode) .glass-dashboard {
+    background: rgba(255, 255, 255, 0.85);
+    color: #111;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+}
+
+    .glass-dashboard:hover {
+        box-shadow: 0 0 30px rgba(0, 150, 255, 0.3);
+        transform: scale(1.01);
+    }
+
+body:not(.dark-mode) .glass-dashboard .list-group-item {
+    color: #222;
+    border-color: rgba(0, 0, 0, 0.05);
+}
+
+body:not(.dark-mode) .glass-dashboard .text-success {
+    color: #198754 !important;
+}
+
+body:not(.dark-mode) .glass-dashboard .text-danger {
+    color: #dc3545 !important;
+}
+
+body:not(.dark-mode) .glass-dashboard .text-warning {
+    color: #ffc107 !important;
+}
+
+/* Dashboard Preview Section Background */
+.dashboard-preview {
+    position: relative;
+    background: linear-gradient(to bottom, #f3f4f6, #e5e7eb);
+    z-index: 1;
+    padding-top: 4rem;
+    padding-bottom: 4rem;
+}
+
+body.dark-mode .dashboard-preview {
+    background: linear-gradient(to bottom, #1a1a1a, #111);
+}
+
+/* Glow Effect Behind Glass */
+.dashboard-glow-wrapper {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    justify-content: center;
+}
+
+    .dashboard-glow-wrapper::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 600px;
+        height: 600px;
+        transform: translate(-50%, -50%);
+        background: radial-gradient(circle, rgba(0, 123, 255, 0.12), transparent 70%);
+        filter: blur(80px);
+        z-index: 0;
+        pointer-events: none;
+    }
+
+/* Elevate the glass panel above the glow */
+.glass-dashboard {
+    position: relative;
+    z-index: 1;
+}

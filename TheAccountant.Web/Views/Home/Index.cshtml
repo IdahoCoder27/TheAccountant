@@ -1,0 +1,109 @@
+﻿@{
+    ViewData["Title"] = "Home";
+    ViewData["BodyClass"] = "page-full-width";
+}
+
+<div class="hero-section text-center text-light d-flex flex-column justify-content-center align-items-center">
+    <div class="container py-5">
+        <h1 class="display-3 fw-bold mb-3">Welcome to <span class="text-primary">The Accountant™</span></h1>
+        <p class="lead mb-4">Secure. Automated. Uncompromising Insight into Your Financial Life.</p>
+        <p class="mb-4">Connect your accounts, track your spending, and never be surprised by a charge again.</p>
+        <a class="btn btn-primary btn-lg px-5" asp-area="Identity" asp-page="/Account/Register">Get Started</a>
+    </div>
+</div>
+
+<!-- How It Works Section -->
+<section class="how-it-works text-center py-5">
+    <div class="container">
+        <h2 class="mb-4 fw-bold">How It Works</h2>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="icon-box mb-3">
+                    <i class="bi bi-link-45deg display-4 text-primary"></i>
+                </div>
+                <h5>Connect Your Accounts</h5>
+                <p class="text-muted">Securely link your bank, credit card, and investment accounts in seconds.</p>
+            </div>
+            <div class="col-md-4">
+                <div class="icon-box mb-3">
+                    <i class="bi bi-graph-up-arrow display-4 text-primary"></i>
+                </div>
+                <h5>Track Spending</h5>
+                <p class="text-muted">Visualize your income, expenses, and recurring charges all in one place.</p>
+            </div>
+            <div class="col-md-4">
+                <div class="icon-box mb-3">
+                    <i class="bi bi-shield-lock display-4 text-primary"></i>
+                </div>
+                <h5>Stay in Control</h5>
+                <p class="text-muted">Receive insights, alerts, and guidance without compromising privacy.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Why The Accountant Section -->
+<section class="why-us bg-dark text-light py-5">
+    <div class="container">
+        <h2 class="text-center fw-bold mb-4">Why The Accountant™?</h2>
+        <div class="row">
+            <div class="col-md-6">
+                <ul class="list-unstyled fs-5">
+                    <li class="mb-3"><i class="bi bi-check-circle-fill text-success me-2"></i>No Ads. No Upsells. Just tools.</li>
+                    <li class="mb-3"><i class="bi bi-check-circle-fill text-success me-2"></i>Open-source and transparent</li>
+                    <li class="mb-3"><i class="bi bi-check-circle-fill text-success me-2"></i>Supports major institutions (Chase, Amex, Edward Jones, etc.)</li>
+                    <li class="mb-3"><i class="bi bi-check-circle-fill text-success me-2"></i>Offline-first with full data ownership</li>
+                </ul>
+            </div>
+            <div class="col-md-6">
+                <blockquote class="blockquote border-start border-primary ps-3">
+                    <p>"The Accountant™ has completely changed the way I understand my money. Finally, a tool that feels like mine."</p>
+                    <footer class="blockquote-footer text-light-emphasis">A totally real user</footer>
+                </blockquote>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Dashboard Mockup Section -->
+<section class="dashboard-preview py-5">
+    <div class="container text-center">
+        <h2 class="fw-bold mb-4">Preview the Dashboard</h2>
+        <div class="row justify-content-center">
+            <div class="col-md-10">
+                <div dashboard-glow-wrapper>
+                    <div class="glass-dashboard p-4">
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <h5>Total Balance</h5>
+                                <p class="fs-4">$12,480.22</p>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <h5>Spending This Month</h5>
+                                <p class="fs-4 text-danger">$2,614.90</p>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <h5>Recurring Charges</h5>
+                                <p class="fs-4 text-warning">$329.50</p>
+                            </div>
+                        </div>
+                        <hr class="bg-light" />
+                        <h6 class="text-start">Recent Transactions</h6>
+                        <ul class="list-group list-group-flush text-start">
+                            <li class="list-group-item bg-transparent border-light d-flex justify-content-between">
+                                <span>Netflix</span><span class="text-danger">- $15.49</span>
+                            </li>
+                            <li class="list-group-item bg-transparent border-light d-flex justify-content-between">
+                                <span>Paycheck</span><span class="text-success">+ $3,200.00</span>
+                            </li>
+                            <li class="list-group-item bg-transparent border-light d-flex justify-content-between">
+                                <span>Spotify</span><span class="text-danger">- $9.99</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+

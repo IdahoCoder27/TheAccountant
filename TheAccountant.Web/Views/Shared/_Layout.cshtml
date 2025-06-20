@@ -1,0 +1,119 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - The Accountant™</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/TheAccountant.Web.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/site-theme.css" />
+
+</head>
+<body class="d-flex flex-column min-vh-100 @ViewData["BodyClass"]">
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm border-bottom box-shadow mb-3" id="mainNavbar">
+            <div class="container-fluid">
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">The Accountant</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                        </li>
+                    </ul>
+                    <button class="btn btn-outline-light btn-sm me-2" data-bs-toggle="offcanvas" data-bs-target="#loginOffcanvas" aria-controls="loginOffcanvas">
+                        Sign In
+                    </button>
+                </div>
+                <button id="themeToggle" class="btn btn-outline-secondary ms-auto me-2">
+                    <span id="themeIcon" class="bi bi-moon-fill"></span>
+                </button>
+            </div>
+        </nav>
+    </header>
+    <div>
+        <main role="main" class="flex-fill py-4 main-content">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted mt-auto">
+        <div class="container">
+            &copy; 2025 - The Accountant - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        </div>
+    </footer>
+
+    <div class="offcanvas offcanvas-end glass-login" tabindex="-1" id="loginOffcanvas" aria-labelledby="loginOffcanvasLabel">
+        <div class="offcanvas-header border-0">
+            <h5 class="offcanvas-title text-light" id="loginOffcanvasLabel">Sign In</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <form method="post" asp-area="Identity" asp-page="/Account/Login">
+                <div class="mb-3">
+                    <label class="form-label text-light">Email</label>
+                    <input name="Input.Email" class="form-control bg-transparent text-light border-light" />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label text-light">Password</label>
+                    <input type="password" name="Input.Password" class="form-control bg-transparent text-light border-light" />
+                </div>
+                <div class="mb-3 form-check">
+                    <input class="form-check-input" type="checkbox" name="Input.RememberMe" />
+                    <label class="form-check-label text-light">Remember me</label>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Login</button>
+                <a asp-area="Identity" asp-page="/Account/ForgotPassword" class="d-block mt-2 text-light">Forgot your password?</a>
+            </form>
+        </div>
+    </div>
+
+
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+    <script>
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+        const body = document.body;
+        const navbar = document.getElementById('mainNavbar');
+
+        function applyTheme(isDark) {
+            if (isDark) {
+                body.classList.add('dark-mode');
+                navbar.classList.remove('navbar-light', 'bg-white');
+                navbar.classList.add('navbar-dark', 'bg-dark');
+                themeIcon.classList.replace('bi-moon-fill', 'bi-sun-fill');
+            } else {
+                body.classList.remove('dark-mode');
+                navbar.classList.remove('navbar-dark', 'bg-dark');
+                navbar.classList.add('navbar-light', 'bg-white');
+                themeIcon.classList.replace('bi-sun-fill', 'bi-moon-fill');
+            }
+        }
+
+        // Load saved preference
+        const storedTheme = localStorage.getItem('theme');
+        const defaultToDark = storedTheme === 'dark' || (!storedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        applyTheme(defaultToDark);
+
+        // Toggle on click
+        themeToggle.addEventListener('click', () => {
+            const isDark = body.classList.contains('dark-mode');
+            const willBeDark = !isDark;
+            applyTheme(willBeDark);
+            localStorage.setItem('theme', willBeDark ? 'dark' : 'light');
+        });
+    </script>
+</body>
+</html>
