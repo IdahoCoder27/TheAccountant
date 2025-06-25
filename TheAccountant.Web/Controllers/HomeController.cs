@@ -15,6 +15,10 @@ namespace TheAccountant.Web.Controllers
 
         public IActionResult Index()
         {
+            if (User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "Dashboard", new { area = "Identity" });
+            }
             return View();
         }
 

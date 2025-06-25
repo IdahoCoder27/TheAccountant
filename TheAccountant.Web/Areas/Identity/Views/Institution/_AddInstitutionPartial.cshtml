@@ -1,0 +1,26 @@
+﻿<h4>Add Institution</h4>
+
+<!-- Optional: keep search bar disabled for now -->
+<form id="addInstitutionForm" method="post" asp-controller="Institution" asp-action="Add">
+    <div class="form-group">
+        <label for="institutionSearch">Search</label>
+        <input type="text" id="institutionSearch" class="form-control" placeholder="Coming soon..." disabled />
+    </div>
+</form>
+
+<!-- Static Grid of Logos (Now AJAX Powered) -->
+<div class="institution-logo-grid">
+    <button class="institution-logo" data-institution="chase">
+        <img src="/images/logos/Chase.png" alt="Chase" />
+    </button>
+    <button class="institution-logo" data-institution="capitalone">
+        <img src="/images/logos/CapitalOne.png" alt="Capital One" />
+    </button>
+    <button class="institution-logo" data-institution="bankofamerica">
+        <img src="/images/logos/BofA.png" alt="Bank of America" />
+    </button>
+    <button class="institution-logo" data-institution="iccu">
+        <img src="/images/logos/ICCU.png" alt="Idaho Central Credit Union" />
+    </button>
+</div>
+

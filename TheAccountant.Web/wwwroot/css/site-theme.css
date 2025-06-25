@@ -38,6 +38,18 @@
         border-color: white;
     }
 
+    body.dark-mode .form-label,
+    body.dark-mode .form-control::placeholder {
+        color: #ccc;
+    }
+
+    body.dark-mode .form-control {
+        background-color: rgba(255, 255, 255, 0.05);
+        color: white;
+        border-color: rgba(255, 255, 255, 0.2);
+    }
+
+
 body:not(.dark-mode) .btn-outline-light {
     color: #333;
     border-color: #ccc;
@@ -205,4 +217,334 @@ body.dark-mode .dashboard-preview {
 .glass-dashboard {
     position: relative;
     z-index: 1;
+}
+
+.register-slide-container {
+    position: relative;
+    background: none;
+    overflow: hidden;
+}
+
+.register-close-button {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+    z-index: 10;
+}
+
+.glass-register-panel {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 16px;
+    padding: 2rem;
+    width: 100%;
+    max-width: 500px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    color: white;
+    opacity: 0;
+    transform: translateY(-40px);
+    animation: slideFadeIn 0.6s ease-out forwards;
+    height: auto;
+    max-height: none !important;
+}
+
+body:not(.dark-mode) .glass-register-panel {
+    background: rgba(255, 255, 255, 0.85);
+    color: #000;
+}
+
+/* Animation */
+@keyframes slideFadeIn {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.glass-register,
+.glass-login {
+    backdrop-filter: blur(15px);
+    background-color: rgba(0, 0, 0, 0.15);
+    background-image: linear-gradient(to bottom right, rgba(255,255,255,0.05), rgba(0,0,0,0.2));
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.offcanvas.offcanvas-top.glass-register {
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    background-color: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(12px);
+    overflow: hidden !important; /* ✨ kill the rogue scrollbar */
+    overscroll-behavior: none;
+    scrollbar-width: none; /* Firefox */
+}
+
+.offcanvas-body {
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+    /* Optionally: kill scrollbar with fire */
+    .offcanvas-body::-webkit-scrollbar {
+        display: none;
+    }
+
+
+.register-slide-container {
+    width: 100%;
+    max-width: 400px;
+    background-color: rgba(0, 0, 0, 0.6);
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.6);
+    padding: 2rem;
+    border-radius: 12px;
+    height: auto !important;
+}
+
+body.offcanvas-open {
+    overflow: hidden !important;
+}
+
+.offcanvas-backdrop {
+    display: none !important; /* disable backdrop if you're already glassing the background */
+}
+
+.offcanvas.offcanvas-top.glass-register {
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    background-color: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(12px);
+    scrollbar-width: none; /* Firefox */
+}
+
+.close-button {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    cursor: pointer;
+}
+
+.google-login {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-weight: 500;
+    text-decoration: none;
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+    border: none;
+    width: 100%;
+    margin-top: 1rem;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+    .google-login img {
+        width: 18px;
+        height: 18px;
+    }
+
+.google-login-light {
+    background-color: #ffffff;
+    color: #000000;
+}
+
+    .google-login-light:hover {
+        background-color: #e6e6e6;
+        color: #000000;
+    }
+
+.google-login-dark {
+    background-color: #222222;
+    color: #ffffff;
+}
+
+    .google-login-dark:hover {
+        background-color: #333333;
+        color: #ffffff;
+    }
+
+ /****************   DASHBOARD STYLES ********************/
+
+#institutionPanel {
+    position: fixed;
+    top: 0;
+    right: -400px; /* initially hidden offscreen */
+    width: 400px;
+    height: 100%;
+    border-left: 1px solid #ccc;
+    box-shadow: -4px 0 10px rgba(0,0,0,0.1);
+    z-index: 9999;
+    transition: right 0.4s ease;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+    #institutionPanel.show {
+        right: 0;
+    }
+
+.institution-form {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    padding: 1.5rem;
+    color: #fff;
+    width: 100%;
+}
+
+    .institution-form h4 {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #fff;
+        margin-bottom: 1rem;
+    }
+
+    .institution-form input,
+    .institution-form label,
+    .institution-form .form-group {
+        color: #fff;
+    }
+
+    .institution-form .btn {
+        margin-right: 0.5rem;
+    }
+
+.suggestion-list {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 8px;
+    padding: 0.5rem;
+    position: absolute;
+    z-index: 999;
+    width: 100%;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.suggestion-item {
+    display: flex;
+    align-items: center;
+    padding: 0.4rem;
+    cursor: pointer;
+}
+
+    .suggestion-item img {
+        height: 24px;
+        margin-right: 0.5rem;
+    }
+
+
+body:not(.dark-mode) {
+    color: #222;
+}
+
+    body:not(.dark-mode) .form-control {
+        background-color: #fff;
+        color: #000;
+        border-color: #ccc;
+    }
+
+        body:not(.dark-mode) .form-label,
+        body:not(.dark-mode) .form-control::placeholder {
+            color: #444;
+        }
+
+    body:not(.dark-mode) .institution-form input,
+    body:not(.dark-mode) .institution-form label {
+        color: #222;
+    }
+
+.text-dynamic {
+    color: #111;
+}
+
+body.dark-mode .text-dynamic {
+    color: #f5f5f5;
+}
+
+[data-theme="dark"] .institution-form {
+    background-color: rgba(30, 30, 30, 0.95);
+    color: #f1f1f1;
+    padding: 1rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+}
+
+    /* Override label colors */
+    [data-theme="dark"] .institution-form label {
+        color: #ccc;
+    }
+
+    /* Override inputs */
+    [data-theme="dark"] .institution-form input[type="text"],
+    [data-theme="dark"] .institution-form input[type="checkbox"],
+    [data-theme="dark"] .institution-form .form-control {
+        background-color: #1c1c1c;
+        color: #e0e0e0;
+        border: 1px solid #444;
+    }
+
+    /* Override suggestion list */
+    [data-theme="dark"] .institution-form .suggestion-list {
+        background-color: #1e1e1e;
+        color: #f0f0f0;
+        border: 1px solid #555;
+    }
+
+    /* Buttons */
+    [data-theme="dark"] .institution-form .btn-success {
+        background-color: #28a745;
+        border-color: #28a745;
+        color: white;
+    }
+
+    [data-theme="dark"] .institution-form .btn-secondary {
+        background-color: #444;
+        border-color: #555;
+        color: #ddd;
+    }
+
+.glass-panel {
+    background-color: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+
+body.dark-mode .glass-panel {
+    background-color: rgba(30, 30, 30, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #f0f0f0;
 }

@@ -1,0 +1,40 @@
+﻿@using TheAccountant.Models.ViewModels
+@model List<TransactionPreview>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Description</th>
+            <th>Amount</th>
+            <th>Date</th>
+            <th>Validation</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr class="@(string.IsNullOrEmpty(item.ValidationError) ? "" : "table-danger")">
+                <td>@item.Description</td>
+                <td>@item.Amount</td>
+                <td>@item.Date?.ToShortDateString()</td>
+                <td>@(string.IsNullOrEmpty(item.ValidationError) ? "Valid" : item.ValidationError)</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@if (!Model.Any(x => !string.IsNullOrEmpty(x.ValidationError)))
+{
+    <button id="confirm-import" class="btn btn-success">Confirm Import</button>
+
+    <script>
+        $('#confirm-import').on('click', function () {
+            $.post('/Dashboard?handler=ConfirmImport', function (result) {
+                if (result.success) {
+                    $('#import-modal-container').fadeOut();
+                    location.reload(); // or update dashboard with JS
+                }
+            });
+        });
+    </script>
+}

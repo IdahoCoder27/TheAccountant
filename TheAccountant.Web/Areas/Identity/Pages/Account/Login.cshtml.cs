@@ -115,7 +115,7 @@ namespace TheAccountant.Areas.Identity.Pages.Account
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User logged in.");
-                    return LocalRedirect(returnUrl ?? Url.Content("~/"));
+                    return LocalRedirect("/Dashboard");
                 }
                 if (result.RequiresTwoFactor)
                 {
