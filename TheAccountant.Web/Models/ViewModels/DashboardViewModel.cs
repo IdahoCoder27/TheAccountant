@@ -1,10 +1,17 @@
-﻿using TheAccountant.Models;
+﻿using TheAccountant.Web.Models;
 
-namespace TheAccountant.Web.Models.ViewModels;
-
-public class DashboardViewModel
+namespace TheAccountant.Web.Models.ViewModels
 {
-    public List<Account> Accounts { get; set; }
-    public List<Transaction> Transactions { get; set; }
-    public List<RecurringPayment> RecurringPayments { get; set; }
+    public class DashboardViewModel
+    {
+        public decimal NetWorth { get; set; }
+
+        public decimal CashBalance { get; set; }
+
+        public decimal CreditDebt { get; set; }
+
+        public decimal MonthlySpending { get; set; }
+
+        public List<Account> Accounts { get; set; } = new();
+    }
 }

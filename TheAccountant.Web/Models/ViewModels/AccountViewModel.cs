@@ -1,15 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using TheAccountant.Web.Models.Enums;
 
-namespace TheAccountant.Web.Models
+namespace TheAccountant.Web.Models.ViewModels
 {
-    public class Account
+    public class AccountViewModel
     {
         public int Id { get; set; }
-
-        [Required]
-        public string UserId { get; set; } = string.Empty;
 
         [Required]
         [StringLength(100)]
@@ -24,25 +20,18 @@ namespace TheAccountant.Web.Models
         [Display(Name = "Account Type")]
         public AccountType AccountType { get; set; }
 
-        [StringLength(4)]
+        [StringLength(4, MinimumLength = 4)]
+        [RegularExpression(@"^\d{4}$",
+            ErrorMessage = "Enter the last four digits.")]
         [Display(Name = "Last 4 Digits")]
         public string? LastFour { get; set; }
 
-        [Column(TypeName = "decimal(18,2)")]
         [Display(Name = "Current Balance")]
+        [DataType(DataType.Currency)]
         public decimal CurrentBalance { get; set; }
 
-        [Column(TypeName = "decimal(18,2)")]
         [Display(Name = "Available Balance")]
+        [DataType(DataType.Currency)]
         public decimal? AvailableBalance { get; set; }
-
-        public bool IsActive { get; set; } = true;
-
-        public DateTime LastUpdated { get; set; } = DateTime.UtcNow;
-
-        public ApplicationUser User { get; set; } = null!;
-
-        public ICollection<Transaction> Transactions { get; set; }
-            = new List<Transaction>();
     }
 }

@@ -1,0 +1,172 @@
+﻿@model IEnumerable<TheAccountant.Web.Models.Account>
+
+@{
+    ViewData["Title"] = "Accounts";
+}
+
+<div class="accounts-page">
+
+    <div class="accounts-toolbar">
+        <div>
+            <h2 class="section-title">Your Accounts</h2>
+            <p class="section-subtitle">
+                Manage your financial accounts and balances.
+            </p>
+        </div>
+
+        <a asp-controller="Accounts"
+           asp-action="Create"
+           class="btn btn-account-primary">
+            + Add Account
+        </a>
+    </div>
+
+    @if (TempData["Error"] is string errorMessage)
+    {
+        <div class="alert alert-danger">
+            @errorMessage
+        </div>
+    }
+
+    @if (!Model.Any())
+    {
+        <div class="empty-state glass-card">
+            <div class="empty-state-icon">$</div>
+
+            <h3>No accounts yet</h3>
+
+            <p>
+                Add your first checking, savings, credit, investment,
+                or loan account.
+            </p>
+
+            <a asp-controller="Accounts"
+               asp-action="Create"
+               class="btn btn-account-primary">
+                Add your first account
+            </a>
+        </div>
+    }
+    else
+    {
+        <div class="account-grid">
+
+            @foreach (var account in Model)
+            {
+                <article class="account-card glass-card @(account.IsActive ? "" : "account-inactive")">
+                    <div class="account-card-header">
+
+                        <div>
+                            <div class="account-institution">
+                                @account.InstitutionName
+                            </div>
+
+                            <h3 class="account-name">
+                                @account.AccountName
+                            </h3>
+
+                            <div class="account-meta">
+                                @account.AccountType
+
+                                @if (!string.IsNullOrWhiteSpace(account.LastFour))
+                                {
+                                    <span>•••• @account.LastFour</span>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="account-status @(account.IsActive ? "active" : "closed")">
+                            @(account.IsActive ? "Active" : "Closed")
+                        </div>
+
+                    </div>
+
+                    <div class="account-balance">
+
+                        <span class="account-balance-label">
+                            Current Balance
+                        </span>
+
+                        <strong>
+                            @account.CurrentBalance.ToString("C")
+                        </strong>
+
+                        @if (account.AvailableBalance.HasValue)
+                        {
+                            <small>
+                                Available:
+                                @account.AvailableBalance.Value.ToString("C")
+                            </small>
+                        }
+
+                    </div>
+
+                    <div class="account-card-footer">
+
+                        <div class="account-updated">
+                            Updated @account.LastUpdated.ToLocalTime().ToString("MMM d, yyyy")
+                        </div>
+
+                        <div class="account-actions">
+                            <a asp-controller="Accounts"
+                               asp-action="Edit"
+                               asp-route-id="@account.Id"
+                               class="btn btn-sm btn-outline-secondary">
+                                Edit
+                            </a>
+
+                            @if (account.IsActive)
+                            {
+                                <form asp-controller="Accounts"
+                                      asp-action="Close"
+                                      asp-route-id="@account.Id"
+                                      method="post"
+                                      class="d-inline">
+
+                                    <button type="submit"
+                                            class="btn btn-sm btn-outline-secondary">
+                                        Close
+                                    </button>
+
+                                </form>
+                                <form asp-controller="Accounts"
+                                      asp-action="Delete"
+                                      asp-route-id="@account.Id"
+                                      method="post"
+                                      class="d-inline"
+                                      onsubmit="return confirm('Delete this account? This cannot be undone.');">
+
+                                    <button type="submit"
+                                            class="btn btn-sm btn-outline-danger">
+                                        Delete
+                                    </button>
+
+                                </form>
+                            }
+                            else
+                            {
+                                <form asp-controller="Accounts"
+                                      asp-action="Reopen"
+                                      asp-route-id="@account.Id"
+                                      method="post"
+                                      class="d-inline">
+
+                                    <button type="submit"
+                                            class="btn btn-sm btn-outline-success">
+                                        Reopen
+                                    </button>
+
+                                </form>
+                            }
+
+                        </div>
+
+                    </div>
+
+                </article>
+            }
+
+        </div>
+    }
+
+</div>

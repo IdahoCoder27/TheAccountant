@@ -1,8 +1,189 @@
-﻿@{
+﻿@model TheAccountant.Web.Models.ViewModels.DashboardViewModel
+
+@{
     ViewData["Title"] = "Dashboard";
 }
 
-<div class="container py-5">
-    <h1>TheAccountant</h1>
-    <p>You are logged in.</p>
+<div class="dashboard-grid">
+
+    <section class="metric-card glass-card">
+        <div class="metric-label">Net Worth</div>
+        <div class="metric-value">
+            @Model.NetWorth.ToString("C")
+        </div>
+        <div class="metric-change positive">
+            +4.8% this month
+        </div>
+    </section>
+
+    <section class="metric-card glass-card">
+        <div class="metric-label">Cash</div>
+        <div class="metric-value">
+            @Model.CashBalance.ToString("C")
+        </div>
+        <div class="metric-subtext">
+            Across checking and savings
+        </div>
+    </section>
+
+    <section class="metric-card glass-card">
+        <div class="metric-label">Credit Debt</div>
+        <div class="metric-value">
+            @Model.CreditDebt.ToString("C")
+        </div>
+        <div class="metric-subtext">
+            3 active accounts
+        </div>
+    </section>
+
+    <section class="metric-card glass-card">
+        <div class="metric-label">Monthly Spending</div>
+        <div class="metric-value">$4,218.63</div>
+        <div class="metric-change negative">
+            +6.2% vs last month
+        </div>
+    </section>
+
+    <section class="dashboard-panel glass-card chart-panel">
+        <div class="panel-header">
+            <div>
+                <h2>Income vs Spending</h2>
+                <p>Last 6 months</p>
+            </div>
+        </div>
+
+        <div class="chart-placeholder">
+            Chart goes here
+        </div>
+    </section>
+
+    <section class="dashboard-panel glass-card category-panel">
+        <div class="panel-header">
+            <div>
+                <h2>Spending by Category</h2>
+                <p>This month</p>
+            </div>
+        </div>
+
+        <div class="category-list">
+
+            <div class="category-row">
+                <span>Housing</span>
+                <strong>$1,845.00</strong>
+            </div>
+
+            <div class="category-row">
+                <span>Groceries</span>
+                <strong>$612.44</strong>
+            </div>
+
+            <div class="category-row">
+                <span>Dining</span>
+                <strong>$384.91</strong>
+            </div>
+
+            <div class="category-row">
+                <span>Fuel</span>
+                <strong>$241.17</strong>
+            </div>
+
+            <div class="category-row">
+                <span>Other</span>
+                <strong>$1,135.11</strong>
+            </div>
+
+        </div>
+    </section>
+
+    <section class="dashboard-panel glass-card accounts-panel">
+        <div class="panel-header">
+            <div>
+                <h2>Accounts</h2>
+                <p>Current balances</p>
+            </div>
+
+            <a asp-controller="Accounts"
+               asp-action="Index"
+               class="panel-link">
+                Manage accounts
+            </a>
+        </div>
+
+        <div class="account-list">
+
+            @foreach (var account in Model.Accounts)
+            {
+                <div class="account-row">
+
+                    <div>
+                        <strong>
+                            @account.InstitutionName @account.AccountName
+                        </strong>
+
+                        <span>
+                            @account.AccountType
+
+                            @if (!string.IsNullOrWhiteSpace(account.LastFour))
+                            {
+                                <text> · •••• @account.LastFour</text>
+                            }
+                        </span>
+                    </div>
+
+                    <strong>
+                        @account.CurrentBalance.ToString("C")
+                    </strong>
+
+                </div>
+            }
+
+        </div>
+    </section>
+
+    <section class="dashboard-panel glass-card transactions-panel">
+        <div class="panel-header">
+            <div>
+                <h2>Recent Transactions</h2>
+                <p>Latest activity</p>
+            </div>
+
+            <a asp-controller="Transactions"
+               asp-action="Index"
+               class="panel-link">
+                View all
+            </a>
+        </div>
+
+        <div class="transaction-list">
+
+            <div class="transaction-row">
+                <div>
+                    <strong>Albertsons</strong>
+                    <span>Groceries · Chase Checking</span>
+                </div>
+
+                <strong class="negative">-$83.16</strong>
+            </div>
+
+            <div class="transaction-row">
+                <div>
+                    <strong>Chevron</strong>
+                    <span>Fuel · Amex</span>
+                </div>
+
+                <strong class="negative">-$51.22</strong>
+            </div>
+
+            <div class="transaction-row">
+                <div>
+                    <strong>Payroll</strong>
+                    <span>Income · ICCU Savings</span>
+                </div>
+
+                <strong class="positive">+$4,423.17</strong>
+            </div>
+
+        </div>
+    </section>
+
 </div>

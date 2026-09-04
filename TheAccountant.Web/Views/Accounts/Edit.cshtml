@@ -1,0 +1,66 @@
+﻿@model TheAccountant.Web.Models.ViewModels.AccountViewModel
+
+@{
+    ViewData["Title"] = "Edit Account";
+}
+
+<div class="account-form-page">
+
+    <div class="account-form-header">
+
+        <div>
+            <h2 class="section-title">Edit Account</h2>
+
+            <p class="section-subtitle">
+                Update account details and balance information.
+            </p>
+        </div>
+
+        <a asp-controller="Accounts"
+           asp-action="Index"
+           class="btn btn-outline-secondary">
+            Back to Accounts
+        </a>
+
+    </div>
+
+    <div class="account-form-card glass-card">
+
+        <form asp-controller="Accounts"
+              asp-action="Edit"
+              asp-route-id="@Model.Id"
+              method="post">
+
+            <input asp-for="Id" type="hidden" />
+
+            <div asp-validation-summary="ModelOnly"
+                 class="alert alert-danger"
+                 role="alert">
+            </div>
+
+            <partial name="_AccountForm" model="Model" />
+
+            <div class="form-actions">
+
+                <a asp-controller="Accounts"
+                   asp-action="Index"
+                   class="btn btn-outline-secondary">
+                    Cancel
+                </a>
+
+                <button type="submit"
+                        class="btn btn-account-primary">
+                    Save Changes
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

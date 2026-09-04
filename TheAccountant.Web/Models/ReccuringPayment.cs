@@ -1,4 +1,4 @@
-﻿namespace TheAccountant.Models
+﻿namespace TheAccountant.Web.Models
 {
     public class RecurringPayment
     {

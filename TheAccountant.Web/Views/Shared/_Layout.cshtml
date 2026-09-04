@@ -13,52 +13,127 @@
     <link rel="stylesheet"
           href="~/css/site.css"
           asp-append-version="true" />
+
+    <link rel="stylesheet"
+          href="~/css/app.css"
+          asp-append-version="true" />
+
+    @await RenderSectionAsync("Styles", required: false)
+
+    <script>
+            (() => {
+                const saved = localStorage.getItem("accountant-theme");
+
+                const preferred =
+                    window.matchMedia("(prefers-color-scheme: dark)").matches
+                        ? "dark"
+                        : "light";
+
+                document.documentElement.dataset.theme =
+                    saved ?? preferred;
+            })();
+    </script>
 </head>
 
 <body>
 
-    <header>
-        <nav class="navbar navbar-expand-lg bg-dark navbar-dark">
-            <div class="container-fluid">
+    <div class="app-shell">
 
-                <a class="navbar-brand"
-                   asp-controller="Dashboard"
-                   asp-action="Index">
-                    TheAccountant
+        <aside class="app-sidebar">
+
+            <div class="sidebar-brand">
+                <div class="brand-icon">$</div>
+                <span>TheAccountant</span>
+            </div>
+
+            <nav class="sidebar-nav">
+
+                <a asp-controller="Dashboard"
+                   asp-action="Index"
+                   class="sidebar-link">
+                    <span>Dashboard</span>
                 </a>
 
-                <div class="ms-auto d-flex align-items-center gap-3">
+                <a asp-controller="Accounts"
+                   asp-action="Index"
+                   class="sidebar-link">
+                    <span>Accounts</span>
+                </a>
 
-                    @if (User.Identity?.IsAuthenticated == true)
-                    {
-                        <span class="text-light">
-                            @User.Identity.Name
-                        </span>
+                <a asp-controller="Transactions"
+                   asp-action="Index"
+                   class="sidebar-link">
+                    <span>Transactions</span>
+                </a>
 
-                        <form asp-controller="Account"
-                              asp-action="Logout"
-                              method="post"
-                              class="m-0">
+                <a asp-controller="Import"
+                   asp-action="Index"
+                   class="sidebar-link">
+                    <span>Import</span>
+                </a>
 
-                            <button type="submit"
-                                    class="btn btn-outline-light btn-sm">
-                                Sign out
-                            </button>
-                        </form>
-                    }
+            </nav>
+
+            <div class="sidebar-footer">
+                <span class="sidebar-version">
+                    TheAccountant
+                </span>
+            </div>
+
+        </aside>
+
+        <div class="app-main">
+
+            <header class="app-header">
+
+                <div>
+                    <h1 class="page-title">
+                        @ViewData["Title"]
+                    </h1>
+                </div>
+
+                <div class="header-user">
+
+                    <button type="button"
+                            id="themeToggle"
+                            class="theme-toggle"
+                            aria-label="Toggle theme"
+                            title="Toggle light/dark theme">
+
+                        <span id="themeIcon">☾</span>
+
+                    </button>
+
+                    <span class="username">
+                        @User.Identity?.Name
+                    </span>
+
+                    <form asp-controller="Account"
+                          asp-action="Logout"
+                          method="post">
+
+                        <button type="submit"
+                                class="btn btn-sm btn-outline-secondary">
+                            Sign out
+                        </button>
+
+                    </form>
 
                 </div>
 
-            </div>
-        </nav>
-    </header>
+            </header>
 
-    <main>
-        @RenderBody()
-    </main>
+            <main class="app-content">
+                @RenderBody()
+            </main>
+
+        </div>
+
+    </div>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/app.js" asp-append-version="true"></script>
 
     @await RenderSectionAsync(
         "Scripts",
@@ -66,3 +141,4 @@
 
 </body>
 </html>
+

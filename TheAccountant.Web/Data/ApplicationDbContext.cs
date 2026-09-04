@@ -21,12 +21,22 @@ namespace TheAccountant.Web.Data
         {
             base.OnModelCreating(builder);
 
-            builder.Entity<Transaction>()
-                .Property(t => t.Amount)
+            builder.Entity<Account>()
+                .HasOne(a => a.User)
+                .WithMany(u => u.Accounts)
+                .HasForeignKey(a => a.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<Account>()
+                .Property(a => a.CurrentBalance)
                 .HasPrecision(18, 2);
 
             builder.Entity<Account>()
-                .Property(a => a.Balance)
+                .Property(a => a.AvailableBalance)
+                .HasPrecision(18, 2);
+
+            builder.Entity<Transaction>()
+                .Property(t => t.Amount)
                 .HasPrecision(18, 2);
 
             builder.Entity<RecurringPayment>()

@@ -1,0 +1,107 @@
+﻿@model TheAccountant.Web.Models.ViewModels.AccountViewModel
+@using TheAccountant.Web.Models.Enums
+
+<div class="form-grid">
+
+    <div class="form-group">
+        <label asp-for="InstitutionName"
+               class="form-label">
+        </label>
+
+        <input asp-for="InstitutionName"
+               class="form-control"
+               placeholder="e.g. Chase" />
+
+        <span asp-validation-for="InstitutionName"
+              class="text-danger small">
+        </span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="AccountName"
+               class="form-label">
+        </label>
+
+        <input asp-for="AccountName"
+               class="form-control"
+               placeholder="e.g. Checking" />
+
+        <span asp-validation-for="AccountName"
+              class="text-danger small">
+        </span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="AccountType"
+               class="form-label">
+        </label>
+
+        <select asp-for="AccountType"
+                asp-items="Html.GetEnumSelectList<AccountType>()"
+                class="form-select">
+        </select>
+
+        <span asp-validation-for="AccountType"
+              class="text-danger small">
+        </span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="LastFour"
+               class="form-label">
+        </label>
+
+        <input asp-for="LastFour"
+               class="form-control"
+               maxlength="4"
+               inputmode="numeric"
+               placeholder="1234" />
+
+        <span asp-validation-for="LastFour"
+              class="text-danger small">
+        </span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="CurrentBalance"
+               class="form-label">
+        </label>
+
+        <div class="input-group">
+
+            <span class="input-group-text">$</span>
+
+            <input asp-for="CurrentBalance"
+                   class="form-control"
+                   inputmode="decimal"
+                   placeholder="0.00" />
+
+        </div>
+
+        <span asp-validation-for="CurrentBalance"
+              class="text-danger small">
+        </span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="AvailableBalance"
+               class="form-label">
+        </label>
+
+        <div class="input-group">
+
+            <span class="input-group-text">$</span>
+
+            <input asp-for="AvailableBalance"
+                   class="form-control"
+                   inputmode="decimal"
+                   placeholder="Optional" />
+
+        </div>
+
+        <span asp-validation-for="AvailableBalance"
+              class="text-danger small">
+        </span>
+    </div>
+
+</div>

@@ -6,8 +6,8 @@ namespace TheAccountant.Web.Data
     public static class DbInitializer
     {
         public static async Task InitializeAsync(
-            IServiceProvider services,
-            IConfiguration configuration)
+    IServiceProvider services,
+    IConfiguration configuration)
         {
             using var scope = services.CreateScope();
 
@@ -15,20 +15,28 @@ namespace TheAccountant.Web.Data
                 scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
 
             var username = configuration["SeedUser:Username"];
-            var password = configuration["SeedUser:Password"];
 
-            if (string.IsNullOrWhiteSpace(username) ||
-                string.IsNullOrWhiteSpace(password))
+            if (string.IsNullOrWhiteSpace(username))
             {
                 throw new InvalidOperationException(
-                    "Seed user credentials have not been configured.");
+                    "Seed username has not been configured.");
             }
 
+            // Check for the user FIRST.
             var existingUser = await userManager.FindByNameAsync(username);
 
             if (existingUser is not null)
             {
                 return;
+            }
+
+            // Password is only needed if we actually have to create the user.
+            var password = configuration["SeedUser:Password"];
+
+            if (string.IsNullOrWhiteSpace(password))
+            {
+                throw new InvalidOperationException(
+                    "Seed password has not been configured.");
             }
 
             var user = new ApplicationUser

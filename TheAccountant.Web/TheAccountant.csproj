@@ -22,7 +22,6 @@
   <ItemGroup>
     <Folder Include="Data\Migrations\" />
     <Folder Include="Interfaces\" />
-    <Folder Include="Models\Enums\" />
     <Folder Include="Services\" />
   </ItemGroup>
 
