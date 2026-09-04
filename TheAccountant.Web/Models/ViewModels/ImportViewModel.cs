@@ -1,29 +1,19 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using System.ComponentModel.DataAnnotations;
 
-namespace TheAccountant.Models.ViewModels
+namespace TheAccountant.Web.Models.ViewModels
 {
     public class ImportViewModel
     {
+        [Required]
+        [Display(Name = "Account")]
+        public int AccountId { get; set; }
+
+        [Required]
         [Display(Name = "Transaction File")]
-        [Required(ErrorMessage = "Please select a file to upload.")]
-        public IFormFile ImportFile { get; set; }
+        public IFormFile? File { get; set; }
 
-        public List<TransactionPreview> PreviewResults { get; set; } = new();
-
-        public bool HasErrors =>
-            PreviewResults?.Any(r => !string.IsNullOrEmpty(r.ValidationError)) ?? false;
-    }
-
-    public class TransactionPreview
-    {
-        public string Description { get; set; }
-
-        [DataType(DataType.Currency)]
-        public decimal? Amount { get; set; }
-
-        [DataType(DataType.Date)]
-        public DateTime? Date { get; set; }
-
-        public string ValidationError { get; set; }
+        public List<SelectListItem> AccountOptions { get; set; } = new();
     }
 }

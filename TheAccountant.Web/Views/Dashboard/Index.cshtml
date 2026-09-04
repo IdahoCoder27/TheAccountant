@@ -113,27 +113,29 @@
 
             @foreach (var account in Model.Accounts)
             {
+                var isLiability =
+                    account.AccountType == AccountType.CreditCard ||
+                    account.AccountType == AccountType.Loan ||
+                    account.AccountType == AccountType.Mortgage;
+
                 <div class="account-row">
-
                     <div>
-                        <strong>
+                        <div class="account-name">
                             @account.InstitutionName @account.AccountName
-                        </strong>
+                        </div>
 
-                        <span>
+                        <div class="account-meta">
                             @account.AccountType
-
                             @if (!string.IsNullOrWhiteSpace(account.LastFour))
                             {
-                                <text> · •••• @account.LastFour</text>
+                                <span> · •••• @account.LastFour</span>
                             }
-                        </span>
+                        </div>
                     </div>
 
-                    <strong>
+                    <div class="account-balance @(isLiability ? "text-danger" : "")">
                         @account.CurrentBalance.ToString("C")
-                    </strong>
-
+                    </div>
                 </div>
             }
 

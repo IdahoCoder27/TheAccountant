@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using TheAccountant.Web.Data;
+using TheAccountant.Web.Services.Import;
+using TheAccountant.Web.Interfaces;
 using TheAccountant.Web.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -33,6 +35,14 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.LoginPath = "/Account/Login";
     options.AccessDeniedPath = "/Account/AccessDenied";
 });
+
+builder.Services.AddScoped<
+    ITransactionFileParser,
+    ChaseCsvTransactionParser>();
+
+builder.Services.AddScoped<
+    ITransactionImportService,
+    TransactionImportService>();
 
 
 var app = builder.Build();

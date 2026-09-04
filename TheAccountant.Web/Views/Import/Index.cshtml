@@ -1,0 +1,112 @@
+﻿@model TheAccountant.Web.Models.ViewModels.ImportViewModel
+
+@{
+    ViewData["Title"] = "Import";
+}
+
+<div class="account-form-page">
+
+    <div class="account-form-header">
+
+        <div>
+            <h2 class="section-title">
+                Import Transactions
+            </h2>
+
+            <p class="section-subtitle">
+                Import transaction data exported from your financial institution.
+            </p>
+        </div>
+
+    </div>
+
+    @if (TempData["Success"] is string success)
+    {
+        <div class="alert alert-success">
+            @success
+        </div>
+    }
+
+    @if (TempData["Error"] is string error)
+    {
+        <div class="alert alert-danger">
+            @error
+        </div>
+    }
+
+    <div class="account-form-card glass-card">
+
+        <form asp-controller="Import"
+              asp-action="Index"
+              method="post"
+              enctype="multipart/form-data">
+
+            <div asp-validation-summary="ModelOnly"
+                 class="alert alert-danger">
+            </div>
+
+            <div class="form-grid">
+
+                <div class="form-group">
+
+                    <label asp-for="AccountId"
+                           class="form-label">
+                    </label>
+
+                    <select asp-for="AccountId"
+                            asp-items="Model.AccountOptions"
+                            class="form-select">
+
+                        <option value="">
+                            Select an account
+                        </option>
+
+                    </select>
+
+                    <span asp-validation-for="AccountId"
+                          class="text-danger small">
+                    </span>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label asp-for="File"
+                           class="form-label">
+                    </label>
+
+                    <input asp-for="File"
+                           type="file"
+                           class="form-control"
+                           accept=".csv,.xlsx,.xls" />
+
+                    <span asp-validation-for="File"
+                          class="text-danger small">
+                    </span>
+
+                    <div class="form-text">
+                        Export transactions from your institution and upload the file here.
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="form-actions">
+
+                <button type="submit"
+                        class="btn btn-account-primary">
+                    Preview Import
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

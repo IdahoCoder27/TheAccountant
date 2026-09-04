@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TheAccountant.Web.Data;
 
@@ -11,9 +12,11 @@ using TheAccountant.Web.Data;
 namespace TheAccountant.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260904215007_AddImportTransactionMetadata")]
+    partial class AddImportTransactionMetadata
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -348,9 +351,6 @@ namespace TheAccountant.Migrations
                         .HasColumnType("nvarchar(64)");
 
                     b.Property<bool>("IsDuplicate")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsPending")
                         .HasColumnType("bit");
 
                     b.Property<bool>("IsValid")

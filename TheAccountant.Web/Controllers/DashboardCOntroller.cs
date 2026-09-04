@@ -6,6 +6,7 @@ using TheAccountant.Web.Data;
 using TheAccountant.Web.Models;
 using TheAccountant.Web.Models.Enums;
 using TheAccountant.Web.Models.ViewModels;
+using TheAccountant.Web.Services;
 
 namespace TheAccountant.Web.Controllers
 {
@@ -32,6 +33,9 @@ namespace TheAccountant.Web.Controllers
                 return Challenge();
             }
 
+            //
+            // ACCOUNTS
+            //
             var accounts = await _context.Accounts
                 .AsNoTracking()
                 .Where(a =>
@@ -67,6 +71,9 @@ namespace TheAccountant.Web.Controllers
                     a.AccountType == AccountType.Mortgage)
                 .Sum(a => Math.Abs(a.CurrentBalance));
 
+            //
+            // DATE RANGES
+            //
             var monthStart = new DateTime(
                 DateTime.Today.Year,
                 DateTime.Today.Month,
@@ -76,74 +83,98 @@ namespace TheAccountant.Web.Controllers
 
             var cashFlowStart = monthStart.AddMonths(-5);
 
-            var cashFlowTransactions = await _context.Transactions
+            //
+            // ANALYTICS TRANSACTIONS
+            //
+            // Load six months of posted transactions once.
+            // Classification happens in memory because the classifier
+            // contains business logic that should not be translated to SQL.
+            //
+            var analyticsTransactions = await _context.Transactions
                 .AsNoTracking()
                 .Where(t =>
                     t.Account.UserId == userId &&
                     t.Date >= cashFlowStart &&
                     t.Date < nextMonthStart &&
                     !t.IsPending)
-                .Select(t => new
-                {
-                    t.Date,
-                    t.Amount
-                })
                 .ToListAsync();
 
-            var cashFlowHistory = new List<MonthlyCashFlowViewModel>();
+            var classifiedTransactions = analyticsTransactions
+                .Select(t => new
+                {
+                    Transaction = t,
+                    Kind = TransactionClassifier.Classify(t)
+                })
+                .ToList();
+
+            //
+            // CASH FLOW HISTORY
+            //
+            var cashFlowHistory =
+                new List<MonthlyCashFlowViewModel>();
 
             for (var i = 0; i < 6; i++)
             {
-                var currentMonth = cashFlowStart.AddMonths(i);
-                var followingMonth = currentMonth.AddMonths(1);
+                var currentMonth =
+                    cashFlowStart.AddMonths(i);
 
-                var transactionsForMonth = cashFlowTransactions
-                    .Where(t =>
-                        t.Date >= currentMonth &&
-                        t.Date < followingMonth)
-                    .ToList();
+                var followingMonth =
+                    currentMonth.AddMonths(1);
+
+                var transactionsForMonth =
+                    classifiedTransactions
+                        .Where(x =>
+                            x.Transaction.Date >= currentMonth &&
+                            x.Transaction.Date < followingMonth)
+                        .ToList();
 
                 var income = transactionsForMonth
-                    .Where(t => t.Amount > 0)
-                    .Sum(t => t.Amount);
+                    .Where(x =>
+                        x.Kind == CashFlowKind.Income)
+                    .Sum(x => x.Transaction.Amount);
 
                 var spending = transactionsForMonth
-                    .Where(t => t.Amount < 0)
-                    .Sum(t => Math.Abs(t.Amount));
+                    .Where(x =>
+                        x.Kind == CashFlowKind.Spending)
+                    .Sum(x =>
+                        Math.Abs(x.Transaction.Amount));
 
-                cashFlowHistory.Add(new MonthlyCashFlowViewModel
-                {
-                    Month = currentMonth.ToString("MMM"),
-                    Income = income,
-                    Spending = spending
-                });
+                cashFlowHistory.Add(
+                    new MonthlyCashFlowViewModel
+                    {
+                        Month = currentMonth.ToString("MMM"),
+                        Income = income,
+                        Spending = spending
+                    });
             }
 
             //
             // MONTHLY SPENDING
             //
-            // Negative transactions only.
-            // Pending transactions are intentionally excluded.
+            // Only transactions classified as actual spending.
+            // Transfers, debt payments, investments and financing
+            // are excluded.
             //
-            var monthlySpending = await _context.Transactions
-                .AsNoTracking()
-                .Where(t =>
-                    t.Account.UserId == userId &&
-                    t.Date >= monthStart &&
-                    t.Date < nextMonthStart &&
-                    t.Amount < 0 &&
-                    !t.IsPending)
-                .SumAsync(t => (decimal?)t.Amount) ?? 0m;
-
-            monthlySpending = Math.Abs(monthlySpending);
+            var monthlySpending =
+                classifiedTransactions
+                    .Where(x =>
+                        x.Transaction.Date >= monthStart &&
+                        x.Transaction.Date < nextMonthStart &&
+                        x.Kind == CashFlowKind.Spending)
+                    .Sum(x =>
+                        Math.Abs(x.Transaction.Amount));
 
             //
             // RECENT TRANSACTIONS
             //
+            // Includes pending transactions because the user should
+            // still be able to see recent account activity.
+            //
             var recentTransactions = await _context.Transactions
                 .AsNoTracking()
                 .Include(t => t.Account)
-                .Where(t => t.Account.UserId == userId)
+                .Where(t =>
+                    t.Account.UserId == userId)
                 .OrderByDescending(t => t.Date)
                 .ThenByDescending(t => t.Id)
                 .Take(5)
@@ -152,37 +183,47 @@ namespace TheAccountant.Web.Controllers
             //
             // SPENDING BY CATEGORY
             //
-            var spendingByCategory = await _context.Transactions
-                .AsNoTracking()
-                .Where(t =>
-                    t.Account.UserId == userId &&
-                    t.Date >= monthStart &&
-                    t.Date < nextMonthStart &&
-                    t.Amount < 0 &&
-                    !t.IsPending)
-                .GroupBy(t =>
-                    string.IsNullOrWhiteSpace(t.Category)
-                        ? "Uncategorized"
-                        : t.Category!)
-                .Select(g => new CategorySpendViewModel
-                {
-                    Category = g.Key,
-                    Amount = Math.Abs(g.Sum(t => t.Amount))
-                })
-                .OrderByDescending(x => x.Amount)
-                .ToListAsync();
+            // Only actual spending is included here.
+            //
+            var spendingByCategory =
+                classifiedTransactions
+                    .Where(x =>
+                        x.Transaction.Date >= monthStart &&
+                        x.Transaction.Date < nextMonthStart &&
+                        x.Kind == CashFlowKind.Spending)
+                    .GroupBy(x =>
+                        string.IsNullOrWhiteSpace(
+                            x.Transaction.Category)
+                            ? "Uncategorized"
+                            : x.Transaction.Category!)
+                    .Select(g =>
+                        new CategorySpendViewModel
+                        {
+                            Category = g.Key,
 
+                            Amount = g.Sum(x =>
+                                Math.Abs(
+                                    x.Transaction.Amount))
+                        })
+                    .OrderByDescending(x => x.Amount)
+                    .ToList();
+
+            //
+            // DASHBOARD
+            //
             var model = new DashboardViewModel
             {
                 CashBalance = cashBalance,
                 CreditDebt = creditDebt,
-                NetWorth = assetBalance - liabilityBalance,
+                NetWorth =
+                    assetBalance - liabilityBalance,
+
                 MonthlySpending = monthlySpending,
                 ActiveAccountCount = accounts.Count,
+
                 Accounts = accounts,
                 RecentTransactions = recentTransactions,
                 SpendingByCategory = spendingByCategory,
-
                 CashFlowHistory = cashFlowHistory
             };
 

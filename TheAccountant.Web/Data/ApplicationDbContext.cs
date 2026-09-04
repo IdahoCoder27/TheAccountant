@@ -74,6 +74,11 @@ namespace TheAccountant.Web.Data
                 .WithMany()
                 .HasForeignKey(t => t.ImportBatchId)
                 .OnDelete(DeleteBehavior.SetNull);
+
+            builder.Entity<ImportRow>()
+                .Property(r => r.Balance)
+                .HasPrecision(18, 2);
+
         }
     }
 }
