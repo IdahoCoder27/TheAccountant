@@ -1,5 +1,68 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
-}
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0" />
+
+    <title>@ViewData["Title"] - TheAccountant</title>
+
+    <link rel="stylesheet"
+          href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
+    <link rel="stylesheet"
+          href="~/css/site.css"
+          asp-append-version="true" />
+</head>
+
+<body>
+
+    <header>
+        <nav class="navbar navbar-expand-lg bg-dark navbar-dark">
+            <div class="container-fluid">
+
+                <a class="navbar-brand"
+                   asp-controller="Dashboard"
+                   asp-action="Index">
+                    TheAccountant
+                </a>
+
+                <div class="ms-auto d-flex align-items-center gap-3">
+
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        <span class="text-light">
+                            @User.Identity.Name
+                        </span>
+
+                        <form asp-controller="Account"
+                              asp-action="Logout"
+                              method="post"
+                              class="m-0">
+
+                            <button type="submit"
+                                    class="btn btn-outline-light btn-sm">
+                                Sign out
+                            </button>
+                        </form>
+                    }
+
+                </div>
+
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        @RenderBody()
+    </main>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+    @await RenderSectionAsync(
+        "Scripts",
+        required: false)
+
+</body>
+</html>

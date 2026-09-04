@@ -55,4 +55,11 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Dashboard}/{action=Index}/{id?}");
 
+if (app.Environment.IsDevelopment())
+{
+    await DbInitializer.InitializeAsync(
+        app.Services,
+        app.Configuration);
+}
+
 app.Run();

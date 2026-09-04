@@ -24,7 +24,6 @@
     <Folder Include="Interfaces\" />
     <Folder Include="Models\Enums\" />
     <Folder Include="Services\" />
-    <Folder Include="Views\Dashboard\" />
   </ItemGroup>
 
 </Project>

@@ -1,5 +1,193 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model TheAccountant.Web.Models.ViewModels.LoginViewModel
+
 @{
+    ViewData["Title"] = "Login";
+    Layout = null;
 }
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>@ViewData["Title"] - TheAccountant</title>
+
+    <link rel="stylesheet"
+          href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
+    <link rel="stylesheet"
+          href="~/css/login.css"
+          asp-append-version="true" />
+</head>
+
+<body>
+
+    <div class="login-page">
+
+        <!-- LEFT SIDE -->
+        <section class="login-panel">
+
+            <div class="login-content">
+
+                <div class="brand">
+                    <div class="brand-mark">$</div>
+                    <span>TheAccountant</span>
+                </div>
+
+                <div class="login-heading">
+                    <h1>Welcome back</h1>
+                    <p>Sign in to view your financial dashboard.</p>
+                </div>
+
+                <form asp-controller="Account"
+                      asp-action="Login"
+                      asp-route-returnUrl="@ViewData["ReturnUrl"]"
+                      method="post">
+
+                    <div asp-validation-summary="ModelOnly"
+                         class="alert alert-danger py-2"
+                         role="alert">
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Username"
+                               class="form-label">
+                            Username
+                        </label>
+
+                        <input asp-for="Username"
+                               class="form-control"
+                               autocomplete="username"
+                               autofocus
+                               placeholder="Enter your username" />
+
+                        <span asp-validation-for="Username"
+                              class="text-danger small">
+                        </span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Password"
+                               class="form-label">
+                            Password
+                        </label>
+
+                        <input asp-for="Password"
+                               class="form-control"
+                               autocomplete="current-password"
+                               placeholder="Enter your password" />
+
+                        <span asp-validation-for="Password"
+                              class="text-danger small">
+                        </span>
+                    </div>
+
+                    <div class="form-check mb-4">
+                        <input asp-for="RememberMe"
+                               class="form-check-input" />
+
+                        <label asp-for="RememberMe"
+                               class="form-check-label">
+                            Remember me
+                        </label>
+                    </div>
+
+                    <button type="submit"
+                            class="btn btn-login w-100">
+                        Sign in
+                    </button>
+
+                </form>
+
+            </div>
+
+        </section>
+
+        <!-- RIGHT SIDE -->
+        <section class="financial-panel">
+
+            <div class="financial-overlay"></div>
+
+            <div class="financial-visual">
+
+                <div class="finance-card finance-card-balance">
+                    <span>Net Worth</span>
+                    <strong>$284,750.42</strong>
+                    <small>▲ 4.8% this month</small>
+                </div>
+
+                <div class="finance-card finance-card-spending">
+                    <span>Monthly Spending</span>
+                    <strong>$4,218.63</strong>
+
+                    <div class="mini-bars">
+                        <i style="height: 35%"></i>
+                        <i style="height: 50%"></i>
+                        <i style="height: 42%"></i>
+                        <i style="height: 68%"></i>
+                        <i style="height: 55%"></i>
+                        <i style="height: 78%"></i>
+                        <i style="height: 62%"></i>
+                    </div>
+                </div>
+
+                <svg class="finance-chart"
+                     viewBox="0 0 800 300"
+                     preserveAspectRatio="none">
+
+                    <defs>
+                        <linearGradient id="chartFill"
+                                        x1="0"
+                                        y1="0"
+                                        x2="0"
+                                        y2="1">
+
+                            <stop offset="0%"
+                                  stop-color="rgba(255,255,255,.35)" />
+
+                            <stop offset="100%"
+                                  stop-color="rgba(255,255,255,0)" />
+                        </linearGradient>
+                    </defs>
+
+                    <path class="chart-fill"
+                          d="M0,250
+                    C75,220 110,225 160,190
+                    C225,145 275,205 330,150
+                    C390,95 455,145 520,85
+                    C585,30 640,95 700,50
+                    C745,20 780,32 800,20
+                    L800,300
+                    L0,300 Z" />
+
+                    <path class="chart-line"
+                          d="M0,250
+                    C75,220 110,225 160,190
+                    C225,145 275,205 330,150
+                    C390,95 455,145 520,85
+                    C585,30 640,95 700,50
+                    C745,20 780,32 800,20" />
+                </svg>
+
+            </div>
+
+            <div class="financial-message">
+                <h2>Your finances.<br />Clearly understood.</h2>
+
+                <p>
+                    Accounts, transactions, spending and trends,
+                    all in one place.
+                </p>
+            </div>
+
+        </section>
+
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+
+</body>
+</html>

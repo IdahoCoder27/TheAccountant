@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
-namespace TheAccountant.Controllers
+namespace TheAccountant.Web.Controllers
 {
-    public class Dashboard : Controller
+    [Authorize]
+    public class DashboardController : Controller
     {
         public IActionResult Index()
         {
