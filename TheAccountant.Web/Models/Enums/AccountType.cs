@@ -5,7 +5,8 @@
         Checking,
         Savings,
         CreditCard,
-        Investment,
+        Brokerage,
+        Retirement,
         Loan,
         Mortgage,
         Other

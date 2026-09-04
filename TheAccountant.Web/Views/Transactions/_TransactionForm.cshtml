@@ -1,0 +1,131 @@
+﻿@model TheAccountant.Web.Models.ViewModels.TransactionViewModel
+@using TheAccountant.Web.Models.Enums
+
+<div class="form-grid">
+
+    <div class="form-group">
+        <label asp-for="AccountId" class="form-label"></label>
+
+        <select asp-for="AccountId"
+                asp-items="Model.AccountOptions"
+                class="form-select">
+            <option value="">Select an account</option>
+        </select>
+
+        <span asp-validation-for="AccountId"
+              class="text-danger small"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Date" class="form-label"></label>
+
+        <input asp-for="Date"
+               class="form-control" />
+
+        <span asp-validation-for="Date"
+              class="text-danger small"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Description" class="form-label"></label>
+
+        <input asp-for="Description"
+               class="form-control"
+               placeholder="Transaction description" />
+
+        <span asp-validation-for="Description"
+              class="text-danger small"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Merchant" class="form-label"></label>
+
+        <input asp-for="Merchant"
+               class="form-control"
+               placeholder="Merchant" />
+
+        <span asp-validation-for="Merchant"
+              class="text-danger small"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Direction"
+               class="form-label"></label>
+
+        <select asp-for="Direction"
+                asp-items="Html.GetEnumSelectList<TransactionDirection>()"
+                class="form-select">
+        </select>
+
+        <span asp-validation-for="Direction"
+              class="text-danger small"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Amount" class="form-label"></label>
+
+        <div class="input-group">
+            <span class="input-group-text">$</span>
+
+            <input asp-for="Amount"
+                   class="form-control"
+                   inputmode="decimal"
+                   placeholder="0.00" />
+        </div>
+
+        <div class="form-text">
+            Choose Expense or Income. TheAccountant handles the sign automatically.
+        </div>
+
+        <span asp-validation-for="Amount"
+              class="text-danger small"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Category" class="form-label"></label>
+
+        <input asp-for="Category"
+               class="form-control"
+               placeholder="e.g. Groceries" />
+
+        <span asp-validation-for="Category"
+              class="text-danger small"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Notes" class="form-label"></label>
+
+        <textarea asp-for="Notes"
+                  class="form-control"
+                  rows="4"
+                  placeholder="Optional notes"></textarea>
+
+        <span asp-validation-for="Notes"
+              class="text-danger small"></span>
+    </div>
+
+    <div class="form-group">
+        <label class="form-label">Status</label>
+
+        <div class="transaction-options">
+
+            <div class="form-check">
+                <input asp-for="IsPending"
+                       class="form-check-input" />
+
+                <label asp-for="IsPending"
+                       class="form-check-label"></label>
+            </div>
+
+            <div class="form-check">
+                <input asp-for="IsRecurring"
+                       class="form-check-input" />
+
+                <label asp-for="IsRecurring"
+                       class="form-check-label"></label>
+            </div>
+
+        </div>
+    </div>
+
+</div>

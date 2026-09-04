@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using TheAccountant.Web.Models.Enums;
+using TheAccountant.Web.Models.Enums;
 
 namespace TheAccountant.Web.Models
 {
@@ -23,6 +24,9 @@ namespace TheAccountant.Web.Models
 
         [Display(Name = "Account Type")]
         public AccountType AccountType { get; set; }
+
+        [Display(Name = "Retirement Account Type")]
+        public RetirementAccountType? RetirementAccountType { get; set; }
 
         [StringLength(4)]
         [Display(Name = "Last 4 Digits")]

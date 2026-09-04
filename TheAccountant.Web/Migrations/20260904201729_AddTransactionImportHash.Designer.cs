@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TheAccountant.Web.Data;
 
@@ -11,9 +12,11 @@ using TheAccountant.Web.Data;
 namespace TheAccountant.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260904201729_AddTransactionImportHash")]
+    partial class AddTransactionImportHash
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -273,96 +276,6 @@ namespace TheAccountant.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("TheAccountant.Web.Models.ImportBatch", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("AccountId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("CompletedUtc")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("CreatedUtc")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("FileName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AccountId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("ImportBatches");
-                });
-
-            modelBuilder.Entity("TheAccountant.Web.Models.ImportRow", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<decimal?>("Amount")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("Category")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<DateTime?>("Date")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(250)
-                        .HasColumnType("nvarchar(250)");
-
-                    b.Property<Guid>("ImportBatchId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("ImportHash")
-                        .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)");
-
-                    b.Property<bool>("IsDuplicate")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsValid")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Merchant")
-                        .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)");
-
-                    b.Property<int>("RowNumber")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ValidationError")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ImportBatchId");
-
-                    b.ToTable("ImportRows");
-                });
-
             modelBuilder.Entity("TheAccountant.Web.Models.RecurringPayment", b =>
                 {
                     b.Property<int>("Id")
@@ -425,9 +338,6 @@ namespace TheAccountant.Migrations
                         .HasMaxLength(250)
                         .HasColumnType("nvarchar(250)");
 
-                    b.Property<Guid?>("ImportBatchId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("ImportHash")
                         .HasColumnType("nvarchar(max)");
 
@@ -451,8 +361,6 @@ namespace TheAccountant.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("AccountId");
-
-                    b.HasIndex("ImportBatchId");
 
                     b.ToTable("Transactions");
                 });
@@ -519,36 +427,6 @@ namespace TheAccountant.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("TheAccountant.Web.Models.ImportBatch", b =>
-                {
-                    b.HasOne("TheAccountant.Web.Models.Account", "Account")
-                        .WithMany()
-                        .HasForeignKey("AccountId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("TheAccountant.Web.Models.ApplicationUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Account");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("TheAccountant.Web.Models.ImportRow", b =>
-                {
-                    b.HasOne("TheAccountant.Web.Models.ImportBatch", "ImportBatch")
-                        .WithMany("Rows")
-                        .HasForeignKey("ImportBatchId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ImportBatch");
-                });
-
             modelBuilder.Entity("TheAccountant.Web.Models.Transaction", b =>
                 {
                     b.HasOne("TheAccountant.Web.Models.Account", "Account")
@@ -557,14 +435,7 @@ namespace TheAccountant.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("TheAccountant.Web.Models.ImportBatch", "ImportBatch")
-                        .WithMany()
-                        .HasForeignKey("ImportBatchId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
                     b.Navigation("Account");
-
-                    b.Navigation("ImportBatch");
                 });
 
             modelBuilder.Entity("TheAccountant.Web.Models.Account", b =>
@@ -575,11 +446,6 @@ namespace TheAccountant.Migrations
             modelBuilder.Entity("TheAccountant.Web.Models.ApplicationUser", b =>
                 {
                     b.Navigation("Accounts");
-                });
-
-            modelBuilder.Entity("TheAccountant.Web.Models.ImportBatch", b =>
-                {
-                    b.Navigation("Rows");
                 });
 #pragma warning restore 612, 618
         }

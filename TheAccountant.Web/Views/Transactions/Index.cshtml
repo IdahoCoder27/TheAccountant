@@ -1,0 +1,204 @@
+﻿@model IEnumerable<TheAccountant.Web.Models.Transaction>
+
+@{
+    ViewData["Title"] = "Transactions";
+}
+
+<div class="transactions-page">
+
+    <div class="transactions-toolbar">
+
+        <div>
+            <h2 class="section-title">Transactions</h2>
+
+            <p class="section-subtitle">
+                Review and manage transaction activity across your accounts.
+            </p>
+        </div>
+
+        <div class="transactions-toolbar-actions">
+
+            <a asp-controller="Transactions"
+               asp-action="Create"
+               class="btn btn-account-primary">
+                + Add Transaction
+            </a>
+
+        </div>
+
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="empty-state glass-card">
+
+            <div class="empty-state-icon">$</div>
+
+            <h3>No transactions yet</h3>
+
+            <p>
+                Add a transaction manually or import transaction data
+                from one of your financial institutions.
+            </p>
+
+            <a asp-controller="Transactions"
+               asp-action="Create"
+               class="btn btn-account-primary">
+                Add your first transaction
+            </a>
+
+        </div>
+    }
+    else
+    {
+        <div class="transaction-table-card glass-card">
+
+            <div class="transaction-table-wrapper">
+
+                <table class="transaction-table">
+
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Description</th>
+                            <th>Account</th>
+                            <th>Category</th>
+                            <th>Source</th>
+                            <th class="text-end">Amount</th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        @foreach (var transaction in Model)
+                        {
+                            <tr>
+
+                                <td class="transaction-date">
+                                    @transaction.Date.ToString("MMM d, yyyy")
+                                </td>
+
+                                <td>
+                                    <div class="transaction-description">
+
+                                        <strong>
+                                            @(string.IsNullOrWhiteSpace(transaction.Merchant)
+                                                ? transaction.Description
+                                                : transaction.Merchant)
+                                        </strong>
+
+                                        @if (!string.IsNullOrWhiteSpace(transaction.Merchant) &&
+                                             !string.Equals(
+                                                 transaction.Merchant,
+                                                 transaction.Description,
+                                                 StringComparison.OrdinalIgnoreCase))
+                                        {
+                                            <span>
+                                                @transaction.Description
+                                            </span>
+                                        }
+
+                                        <div class="transaction-flags">
+
+                                            @if (transaction.IsPending)
+                                            {
+                                                <span class="transaction-badge pending">
+                                                    Pending
+                                                </span>
+                                            }
+
+                                            @if (transaction.IsRecurring)
+                                            {
+                                                <span class="transaction-badge recurring">
+                                                    Recurring
+                                                </span>
+                                            }
+
+                                        </div>
+
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <div class="transaction-account">
+                                        <strong>
+                                            @transaction.Account.InstitutionName
+                                        </strong>
+
+                                        <span>
+                                            @transaction.Account.AccountName
+                                        </span>
+                                    </div>
+                                </td>
+
+                                <td>
+                                    @if (!string.IsNullOrWhiteSpace(transaction.Category))
+                                    {
+                                        <span class="transaction-category">
+                                            @transaction.Category
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="transaction-muted">
+                                            Uncategorized
+                                        </span>
+                                    }
+                                </td>
+
+                                <td>
+                                    <span class="transaction-source">
+                                        @transaction.Source
+                                    </span>
+                                </td>
+
+                                <td class="transaction-amount
+                                    @(transaction.Amount >= 0 ? "positive" : "negative")">
+
+                                    @(transaction.Amount >= 0
+                                        ? "+" + transaction.Amount.ToString("C")
+                                        : transaction.Amount.ToString("C"))
+
+                                </td>
+                                <td class="text-end">
+
+                                    <div class="d-flex justify-content-end gap-2">
+
+                                        <a asp-controller="Transactions"
+                                           asp-action="Edit"
+                                           asp-route-id="@transaction.Id"
+                                           class="btn btn-sm btn-outline-secondary">
+                                            Edit
+                                        </a>
+
+                                        <form asp-controller="Transactions"
+                                              asp-action="Delete"
+                                              asp-route-id="@transaction.Id"
+                                              method="post"
+                                              onsubmit="return confirm('Delete this transaction? This cannot be undone.');">
+
+                                            <button type="submit"
+                                                    class="btn btn-sm btn-outline-danger">
+                                                Delete
+                                            </button>
+
+                                        </form>
+
+                                    </div>
+
+                                </td>
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+    }
+
+</div>

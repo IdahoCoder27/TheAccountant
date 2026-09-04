@@ -1,4 +1,5 @@
 ﻿@model TheAccountant.Web.Models.ViewModels.DashboardViewModel
+@using System.Text.Json
 
 @{
     ViewData["Title"] = "Dashboard";
@@ -32,15 +33,15 @@
             @Model.CreditDebt.ToString("C")
         </div>
         <div class="metric-subtext">
-            3 active accounts
+            @Model.ActiveAccountCount active account@(Model.ActiveAccountCount == 1 ? "" : "s")
         </div>
     </section>
 
     <section class="metric-card glass-card">
         <div class="metric-label">Monthly Spending</div>
-        <div class="metric-value">$4,218.63</div>
-        <div class="metric-change negative">
-            +6.2% vs last month
+        <div class="metric-value">@Model.MonthlySpending.ToString("C")</div>
+        <div class="metric-subtext">
+            Posted transactions this month
         </div>
     </section>
 
@@ -52,8 +53,8 @@
             </div>
         </div>
 
-        <div class="chart-placeholder">
-            Chart goes here
+        <div class="cashflow-chart-container">
+            <canvas id="cashFlowChart"></canvas>
         </div>
     </section>
 
@@ -67,30 +68,29 @@
 
         <div class="category-list">
 
-            <div class="category-row">
-                <span>Housing</span>
-                <strong>$1,845.00</strong>
-            </div>
+            @if (Model.SpendingByCategory.Any())
+            {
+                @foreach (var category in Model.SpendingByCategory)
+                {
+                    <div class="category-row">
 
-            <div class="category-row">
-                <span>Groceries</span>
-                <strong>$612.44</strong>
-            </div>
+                        <span>
+                            @category.Category
+                        </span>
 
-            <div class="category-row">
-                <span>Dining</span>
-                <strong>$384.91</strong>
-            </div>
+                        <strong>
+                            @category.Amount.ToString("C")
+                        </strong>
 
-            <div class="category-row">
-                <span>Fuel</span>
-                <strong>$241.17</strong>
-            </div>
-
-            <div class="category-row">
-                <span>Other</span>
-                <strong>$1,135.11</strong>
-            </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="dashboard-empty">
+                    No posted spending this month.
+                </div>
+            }
 
         </div>
     </section>
@@ -156,34 +156,188 @@
 
         <div class="transaction-list">
 
-            <div class="transaction-row">
-                <div>
-                    <strong>Albertsons</strong>
-                    <span>Groceries · Chase Checking</span>
+            @if (Model.RecentTransactions.Any())
+            {
+                @foreach (var transaction in Model.RecentTransactions)
+                {
+                    <div class="transaction-row">
+
+                        <div>
+
+                            <strong>
+                                @(string.IsNullOrWhiteSpace(transaction.Merchant)
+                                    ? transaction.Description
+                                    : transaction.Merchant)
+                            </strong>
+
+                            <span>
+                                @(string.IsNullOrWhiteSpace(transaction.Category)
+                                    ? "Uncategorized"
+                                    : transaction.Category)
+
+                                ·
+
+                                @transaction.Account.InstitutionName
+                                @transaction.Account.AccountName
+
+                                @if (transaction.IsPending)
+                                {
+                                    <text> · Pending</text>
+                                }
+                            </span>
+
+                        </div>
+
+                        <strong class="@(transaction.Amount >= 0 ? "positive" : "negative")">
+
+                            @(transaction.Amount >= 0
+                                ? "+" + transaction.Amount.ToString("C")
+                                : transaction.Amount.ToString("C"))
+
+                        </strong>
+
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="dashboard-empty">
+                    No transactions yet.
                 </div>
-
-                <strong class="negative">-$83.16</strong>
-            </div>
-
-            <div class="transaction-row">
-                <div>
-                    <strong>Chevron</strong>
-                    <span>Fuel · Amex</span>
-                </div>
-
-                <strong class="negative">-$51.22</strong>
-            </div>
-
-            <div class="transaction-row">
-                <div>
-                    <strong>Payroll</strong>
-                    <span>Income · ICCU Savings</span>
-                </div>
-
-                <strong class="positive">+$4,423.17</strong>
-            </div>
+            }
 
         </div>
     </section>
 
 </div>
+
+@section Scripts {
+
+    <script src="~/lib/chart.js/chart.umd.js"></script>
+
+    <script>
+        $(function () {
+
+            const labels = @Html.Raw(
+                                            JsonSerializer.Serialize(
+                                                    Model.CashFlowHistory.Select(x => x.Month)));
+
+            const incomeData = @Html.Raw(
+                                            JsonSerializer.Serialize(
+                                                    Model.CashFlowHistory.Select(x => x.Income)));
+
+            const spendingData = @Html.Raw(
+                                            JsonSerializer.Serialize(
+                                                    Model.CashFlowHistory.Select(x => x.Spending)));
+
+            const canvas =
+                document.getElementById("cashFlowChart");
+
+            if (!canvas) {
+                return;
+            }
+
+            const ctx = canvas.getContext("2d");
+
+            const chart = new Chart(ctx, {
+                type: "line",
+
+                data: {
+                    labels: labels,
+
+                    datasets: [
+                        {
+                            label: "Income",
+                            data: incomeData,
+
+                            borderColor: "#22c55e",
+                            backgroundColor: "rgba(34, 197, 94, .12)",
+
+                            borderWidth: 2,
+                            tension: .35,
+
+                            pointRadius: 4,
+                            pointHoverRadius: 6,
+
+                            fill: true
+                        },
+                        {
+                            label: "Spending",
+                            data: spendingData,
+
+                            borderColor: "#3b82f6",
+                            backgroundColor: "rgba(59, 130, 246, .08)",
+
+                            borderWidth: 2,
+                            tension: .35,
+
+                            pointRadius: 4,
+                            pointHoverRadius: 6,
+
+                            fill: true
+                        }
+                    ]
+                },
+
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+
+                    interaction: {
+                        intersect: false,
+                        mode: "index"
+                    },
+
+                    plugins: {
+                        legend: {
+                            position: "top",
+                            align: "end"
+                        },
+
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    return context.dataset.label +
+                                        ": " +
+                                        new Intl.NumberFormat(
+                                            "en-US",
+                                            {
+                                                style: "currency",
+                                                currency: "USD"
+                                            })
+                                            .format(context.parsed.y);
+                                }
+                            }
+                        }
+                    },
+
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+
+                            ticks: {
+                                callback: function (value) {
+                                    return new Intl.NumberFormat(
+                                        "en-US",
+                                        {
+                                            style: "currency",
+                                            currency: "USD",
+                                            maximumFractionDigits: 0
+                                        })
+                                        .format(value);
+                                }
+                            }
+                        },
+
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+
+        });
+    </script>
+}
