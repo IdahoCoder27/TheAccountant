@@ -8,6 +8,11 @@ namespace TheAccountant.Web.Interfaces
 
         bool CanParse(string fileName);
 
+        string? GetAccountLastFour(string fileName)
+        {
+            return null;
+        }
+
         Task<IReadOnlyList<TransactionImportRowDto>> ParseAsync(
             Stream fileStream);
     }

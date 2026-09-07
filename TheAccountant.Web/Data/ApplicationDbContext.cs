@@ -16,10 +16,9 @@ namespace TheAccountant.Web.Data
         public DbSet<Account> Accounts => Set<Account>();
         public DbSet<Transaction> Transactions => Set<Transaction>();
         public DbSet<RecurringPayment> RecurringPayments => Set<RecurringPayment>();
-
         public DbSet<ImportBatch> ImportBatches => Set<ImportBatch>();
-
         public DbSet<ImportRow> ImportRows => Set<ImportRow>();
+        public DbSet<CategoryRule> CategoryRules => Set<CategoryRule>();
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -78,6 +77,20 @@ namespace TheAccountant.Web.Data
             builder.Entity<ImportRow>()
                 .Property(r => r.Balance)
                 .HasPrecision(18, 2);
+
+            builder.Entity<CategoryRule>()
+                .HasOne(r => r.User)
+                .WithMany()
+                .HasForeignKey(r => r.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<CategoryRule>()
+                .HasIndex(r => new
+                {
+                    r.UserId,
+                    r.Pattern
+                });
+
 
         }
     }

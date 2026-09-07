@@ -2,6 +2,7 @@
 using CsvHelper;
 using CsvHelper.Configuration;
 using TheAccountant.Web.Interfaces;
+using System.Text.RegularExpressions;
 using TheAccountant.Web.Models.DTOs;
 
 namespace TheAccountant.Web.Services.Import
@@ -194,6 +195,25 @@ namespace TheAccountant.Web.Services.Import
                 string.IsNullOrWhiteSpace(row.ValidationError)
                     ? error
                     : $"{row.ValidationError} {error}";
+        }
+
+        public string? GetAccountLastFour(string fileName)
+        {
+            if (string.IsNullOrWhiteSpace(fileName))
+            {
+                return null;
+            }
+
+            var name = Path.GetFileName(fileName);
+
+            var match = Regex.Match(
+                name,
+                @"^Chase(?<lastFour>\d{4})_Activity_",
+                RegexOptions.IgnoreCase);
+
+            return match.Success
+                ? match.Groups["lastFour"].Value
+                : null;
         }
     }
 }
