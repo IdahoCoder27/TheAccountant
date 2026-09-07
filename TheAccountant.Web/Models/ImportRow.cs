@@ -34,5 +34,15 @@ namespace TheAccountant.Web.Models
 
         [StringLength(500)]
         public string? ValidationError { get; set; }
+        public decimal? Balance { get; set; }
+
+        [StringLength(100)]
+        public string? ExternalReference { get; set; }
+
+        [StringLength(50)]
+        public string? TransactionType { get; set; }
+
+        public bool IsPending { get; set; }
+
     }
 }
