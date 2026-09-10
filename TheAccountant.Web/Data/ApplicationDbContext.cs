@@ -19,6 +19,9 @@ namespace TheAccountant.Web.Data
         public DbSet<ImportBatch> ImportBatches => Set<ImportBatch>();
         public DbSet<ImportRow> ImportRows => Set<ImportRow>();
         public DbSet<CategoryRule> CategoryRules => Set<CategoryRule>();
+        public DbSet<TransactionTag> TransactionTags =>
+    Set<TransactionTag>();
+
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -91,7 +94,19 @@ namespace TheAccountant.Web.Data
                     r.Pattern
                 });
 
+            builder.Entity<TransactionTag>()
+                .HasIndex(t => new
+                {
+                    t.TransactionId,
+                    t.NormalizedName
+                })
+                .IsUnique();
 
+            builder.Entity<TransactionTag>()
+                .HasOne(t => t.Transaction)
+                .WithMany(t => t.Tags)
+                .HasForeignKey(t => t.TransactionId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

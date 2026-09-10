@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using TheAccountant.Interfaces;
 using TheAccountant.Web.Data;
-using TheAccountant.Web.Services.Import;
 using TheAccountant.Web.Interfaces;
 using TheAccountant.Web.Models;
+using TheAccountant.Web.Services;
+using TheAccountant.Web.Services.Import;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -44,6 +46,9 @@ builder.Services.AddScoped<
     ITransactionImportService,
     TransactionImportService>();
 
+builder.Services.AddScoped<
+    ICategoryService,
+    CategoryService>();
 
 var app = builder.Build();
 

@@ -43,6 +43,10 @@ namespace TheAccountant.Web.Models.ViewModels
         [StringLength(500)]
         public string? Notes { get; set; }
 
+        [StringLength(1000)]
+        [Display(Name = "Tags")]
+        public string? TagsText { get; set; }
+
         public List<SelectListItem> AccountOptions { get; set; } = new();
     }
 }

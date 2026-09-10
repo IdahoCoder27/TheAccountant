@@ -949,3 +949,23 @@ body {
     .import-preview-table td:nth-child(3) {
         min-width: 320px;
     }
+
+.category-modal {
+    background: var(--surface-solid);
+    color: var(--text-primary);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+}
+
+    .category-modal .modal-header,
+    .category-modal .modal-footer {
+        border-color: var(--border);
+    }
+
+    .category-modal .btn-close {
+        filter: none;
+    }
+
+[data-theme="dark"] .category-modal .btn-close {
+    filter: invert(1);
+}

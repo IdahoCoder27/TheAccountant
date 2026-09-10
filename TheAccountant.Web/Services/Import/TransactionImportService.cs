@@ -1,13 +1,14 @@
-﻿using System.Globalization;
+﻿using Microsoft.EntityFrameworkCore;
+using System.Globalization;
 using System.Security.Cryptography;
 using System.Text;
-using Microsoft.EntityFrameworkCore;
+using System.Text.RegularExpressions;
+using TheAccountant.Interfaces;
 using TheAccountant.Web.Data;
 using TheAccountant.Web.Interfaces;
 using TheAccountant.Web.Models;
 using TheAccountant.Web.Models.DTOs;
 using TheAccountant.Web.Models.Enums;
-using System.Text.RegularExpressions;
 
 namespace TheAccountant.Web.Services.Import
 {
@@ -16,13 +17,16 @@ namespace TheAccountant.Web.Services.Import
     {
         private readonly ApplicationDbContext _context;
         private readonly IEnumerable<ITransactionFileParser> _parsers;
+        private readonly ICategoryService _categoryService;
 
         public TransactionImportService(
             ApplicationDbContext context,
-            IEnumerable<ITransactionFileParser> parsers)
+            IEnumerable<ITransactionFileParser> parsers,
+            ICategoryService categoryService)
         {
             _context = context;
             _parsers = parsers;
+            _categoryService = categoryService;
         }
 
         public async Task<Guid> CreatePreviewAsync(
@@ -215,8 +219,8 @@ namespace TheAccountant.Web.Services.Import
         }
 
         public async Task<int> ConfirmImportAsync(
-    string userId,
-    Guid batchId)
+                        string userId,
+                        Guid batchId)
         {
             var batch = await _context.ImportBatches
                 .Include(b => b.Rows)
@@ -332,7 +336,8 @@ namespace TheAccountant.Web.Services.Import
                         pendingMatch.Category =
                             !string.IsNullOrWhiteSpace(row.Category)
                                 ? row.Category
-                                : TransactionCategorizer.Categorize(
+                                : await _categoryService.CategorizeAsync(
+                                    userId,
                                     row.Description);
 
                         pendingMatch.IsPending = false;
@@ -360,6 +365,14 @@ namespace TheAccountant.Web.Services.Import
                     }
                 }
 
+                var category =
+                    !string.IsNullOrWhiteSpace(row.Category)
+                        ? row.Category
+                        : await _categoryService.CategorizeAsync(
+                            userId,
+                            row.Description);
+
+
                 //
                 // Completely new transaction.
                 //
@@ -378,11 +391,7 @@ namespace TheAccountant.Web.Services.Import
                     Amount =
                         row.Amount!.Value,
 
-                    Category =
-                        !string.IsNullOrWhiteSpace(row.Category)
-                            ? row.Category
-                            : TransactionCategorizer.Categorize(
-                                row.Description),
+                    Category = category,
 
                     IsPending =
                         row.IsPending,

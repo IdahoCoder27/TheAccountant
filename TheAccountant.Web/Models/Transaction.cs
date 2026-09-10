@@ -45,5 +45,7 @@ namespace TheAccountant.Web.Models
         public Guid? ImportBatchId { get; set; }
 
         public ImportBatch? ImportBatch { get; set; }
+
+        public List<TransactionTag> Tags { get; set; } = new();
     }
 }

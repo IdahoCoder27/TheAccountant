@@ -1,4 +1,5 @@
-﻿@model IEnumerable<TheAccountant.Web.Models.Transaction>
+﻿@model TheAccountant.Web.Models.ViewModels.TransactionListViewModel
+@using TheAccountant.Web.Models
 
 @{
     ViewData["Title"] = "Transactions";
@@ -14,7 +15,19 @@
             <p class="section-subtitle">
                 Review and manage transaction activity across your accounts.
             </p>
-        </div>
+        </div>@if (TempData["Error"] is string error)
+        {
+            <div class="alert alert-danger" role="alert">
+                @error
+            </div>
+        }
+
+        @if (TempData["Success"] is string success)
+        {
+            <div class="alert alert-success" role="status">
+                @success
+            </div>
+        }
 
         <div class="transactions-toolbar-actions">
 
@@ -28,13 +41,100 @@
 
     </div>
 
-    @if (!Model.Any())
+    <form asp-action="Index"
+          method="get"
+          class="glass-card p-3 mb-3 d-flex flex-wrap align-items-end gap-2">
+
+        <div>
+            <label for="tagFilter" class="form-label">
+                Filter by tag
+            </label>
+
+            <input id="tagFilter"
+                   name="tag"
+                   value="@Model.Tag"
+                   list="availableTags"
+                   maxlength="80"
+                   class="form-control"
+                   placeholder="All transactions" />
+
+            <datalist id="availableTags">
+                @foreach (var name in Model.AvailableTags)
+                {
+                    <option value="@name"></option>
+                }
+            </datalist>
+        </div>
+
+        <button type="submit" class="btn btn-account-primary text-nowrap">
+            Apply
+        </button>
+
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            Clear
+        </a>
+    </form>
+
+    @if (Model.Tag is not null)
+    {
+        <div class="glass-card p-3 mb-3">
+            <h3 class="h5">@Model.Tag</h3>
+
+            <p>
+                @Model.Transactions.Count transactions
+                across all dates and accounts
+            </p>
+
+            <div class="d-flex flex-wrap gap-4">
+                <div>
+                    Posted expenses
+                    <strong class="d-block">
+                        @Model.PostedExpenses.ToString("C")
+                    </strong>
+                </div>
+
+                <div>
+                    Posted credits
+                    <strong class="d-block">
+                        @Model.PostedCredits.ToString("C")
+                    </strong>
+                </div>
+
+                <div>
+                    Net posted outflow
+                    <strong class="d-block">
+                        @Model.NetOutflow.ToString("C")
+                    </strong>
+                </div>
+
+                <div>
+                    Pending expenses
+                    <strong class="d-block">
+                        @Model.PendingExpenses.ToString("C")
+                    </strong>
+                </div>
+            </div>
+
+            <p class="small mt-3 mb-0">
+                Credits include tagged refunds or income.
+                Recognized transfers, financing, investments, and debt
+                payments are excluded from these totals.
+                Pending expenses are separate.
+            </p>
+        </div>
+    }
+
+    @if (!Model.Transactions.Any())
     {
         <div class="empty-state glass-card">
 
             <div class="empty-state-icon">$</div>
 
-            <h3>No transactions yet</h3>
+            <h3>
+                @(Model.Tag is null
+                    ? "No transactions yet"
+                    : "No transactions match this tag")
+            </h3>
 
             <p>
                 Add a transaction manually or import transaction data
@@ -63,16 +163,16 @@
                             <th>Description</th>
                             <th>Account</th>
                             <th>Category</th>
+                            <th>Tags</th>
                             <th>Source</th>
                             <th class="text-end">Amount</th>
-                            <th></th>
                             <th></th>
                         </tr>
                     </thead>
 
                     <tbody>
 
-                        @foreach (var transaction in Model)
+                        @foreach (var transaction in Model.Transactions)
                         {
                             <tr>
 
@@ -134,18 +234,53 @@
                                 </td>
 
                                 <td>
-                                    @if (!string.IsNullOrWhiteSpace(transaction.Category))
+                                    @if (string.IsNullOrWhiteSpace(transaction.Category) ||
+                                         transaction.Category == "Uncategorized")
                                     {
-                                        <span class="transaction-category">
-                                            @transaction.Category
-                                        </span>
+                                        <button type="button"
+                                                class="btn btn-sm btn-outline-warning"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#categoryModal"
+                                                data-transaction-id="@transaction.Id"
+                                                data-transaction-description="@transaction.Description">
+                                            Uncategorized
+                                        </button>
                                     }
                                     else
                                     {
-                                        <span class="transaction-muted">
-                                            Uncategorized
-                                        </span>
+                                        <button type="button"
+                                                class="btn btn-sm btn-outline-secondary"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#categoryModal"
+                                                data-transaction-id="@transaction.Id"
+                                                data-transaction-description="@transaction.Description"
+                                                data-current-category="@transaction.Category">
+                                            @transaction.Category
+                                        </button>
                                     }
+                                </td>
+
+                                <td>
+                                    <div class="d-flex flex-wrap gap-1 mb-1">
+                                        @foreach (var tag in transaction.Tags.OrderBy(t => t.Name))
+                                        {
+                                            <a asp-action="Index"
+                                               asp-route-tag="@tag.Name"
+                                               class="badge rounded-pill text-bg-secondary text-decoration-none">
+                                                @tag.Name
+                                            </a>
+                                        }
+                                    </div>
+
+                                    <button type="button"
+                                            class="btn btn-sm btn-outline-secondary"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#tagsModal"
+                                            data-transaction-id="@transaction.Id"
+                                            data-description="@transaction.Description"
+                                            data-tags="@string.Join(", ", transaction.Tags.OrderBy(t => t.Name).Select(t => t.Name))">
+                                        @(transaction.Tags.Any() ? "Edit tags" : "Add tags")
+                                    </button>
                                 </td>
 
                                 <td>
@@ -202,3 +337,228 @@
     }
 
 </div>
+
+<div class="modal fade"
+     id="categoryModal"
+     tabindex="-1"
+     aria-labelledby="categoryModalLabel"
+     aria-hidden="true">
+
+    <div class="modal-dialog modal-dialog-centered">
+
+        <div class="modal-content category-modal">
+
+            <form asp-controller="Transactions"
+                  asp-action="UpdateCategory"
+                  method="post">
+
+                <div class="modal-header">
+
+                    <h5 class="modal-title"
+                        id="categoryModalLabel">
+                        Assign Category
+                    </h5>
+
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal"
+                            aria-label="Close">
+                    </button>
+
+                </div>
+
+                <div class="modal-body">
+
+                    <input type="hidden"
+                           id="categoryTransactionId"
+                           name="id" />
+
+                    <div class="mb-3">
+
+                        <div class="text-secondary small mb-1">
+                            Transaction
+                        </div>
+
+                        <div id="categoryTransactionDescription"
+                             class="fw-semibold">
+                        </div>
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        <label for="categorySelect"
+                               class="form-label">
+                            Category
+                        </label>
+
+                        <select id="categorySelect"
+                                name="category"
+                                class="form-select"
+                                required>
+
+                            <option value="">
+                                Select a category
+                            </option>
+
+                            @foreach (var category in TransactionCategories.All)
+                            {
+                                <option value="@category">
+                                    @category
+                                </option>
+                            }
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+
+                    <button type="button"
+                            class="btn btn-outline-secondary"
+                            data-bs-dismiss="modal">
+                        Cancel
+                    </button>
+
+                    <button type="submit"
+                            class="btn btn-account-primary">
+                        Save Category
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+
+        const modal = document.getElementById("categoryModal");
+
+        modal.addEventListener("show.bs.modal", function(event) {
+
+            const button = event.relatedTarget;
+
+            const transactionId =
+                button.getAttribute("data-transaction-id");
+
+            const description =
+                button.getAttribute("data-transaction-description");
+
+            const currentCategory =
+                button.getAttribute("data-current-category") || "";
+
+            document.getElementById(
+                "categoryTransactionId").value =
+                transactionId;
+
+            document.getElementById(
+                "categoryTransactionDescription").textContent =
+                description;
+
+            document.getElementById(
+                "categorySelect").value =
+                currentCategory;
+        });
+
+    });
+</script>
+
+<div class="modal fade"
+     id="tagsModal"
+     tabindex="-1"
+     aria-labelledby="tagsModalLabel"
+     aria-hidden="true">
+
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content category-modal">
+
+            <form asp-action="UpdateTags" method="post">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="tagsModalLabel">
+                        Transaction tags
+                    </h5>
+
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal"
+                            aria-label="Close">
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    <input type="hidden"
+                           id="tagsTransactionId"
+                           name="id" />
+
+                    <input type="hidden"
+                           name="tag"
+                           value="@Model.Tag" />
+
+                    <p id="tagsDescription"></p>
+
+                    <label for="tagsText" class="form-label">
+                        Tags
+                    </label>
+
+                    <input id="tagsText"
+                           name="tagsText"
+                           class="form-control"
+                           maxlength="1000"
+                           placeholder="Europe 2026, Anniversary"
+                           aria-describedby="tagModalHelp" />
+
+                    <div id="tagModalHelp" class="form-text">
+                        Separate tags with commas.
+                        Up to 10 tags, 80 characters each.
+                        Clear the field to remove all tags.
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button"
+                            class="btn btn-outline-secondary"
+                            data-bs-dismiss="modal">
+                        Cancel
+                    </button>
+
+                    <button type="submit"
+                            class="btn btn-account-primary">
+                        Save tags
+                    </button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const modal = document.getElementById("tagsModal");
+
+        modal.addEventListener("show.bs.modal", function(event) {
+            const button = event.relatedTarget;
+
+            document.getElementById("tagsTransactionId").value =
+                button.dataset.transactionId;
+
+            document.getElementById("tagsDescription").textContent =
+                button.dataset.description;
+
+            document.getElementById("tagsText").value =
+                button.dataset.tags || "";
+        });
+
+        modal.addEventListener("shown.bs.modal", function() {
+            document.getElementById("tagsText").focus();
+        });
+    });
+</script>

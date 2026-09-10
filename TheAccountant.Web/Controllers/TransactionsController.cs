@@ -7,6 +7,7 @@ using TheAccountant.Web.Data;
 using TheAccountant.Web.Models;
 using TheAccountant.Web.Models.Enums;
 using TheAccountant.Web.Models.ViewModels;
+using TheAccountant.Web.Services;
 
 namespace TheAccountant.Web.Controllers
 {
@@ -25,7 +26,7 @@ namespace TheAccountant.Web.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string? tag)
         {
             var userId = _userManager.GetUserId(User);
 
@@ -34,15 +35,55 @@ namespace TheAccountant.Web.Controllers
                 return Challenge();
             }
 
-            var transactions = await _context.Transactions
+            var query = _context.Transactions
                 .AsNoTracking()
+                .Where(t => t.Account.UserId == userId);
+
+            var availableTags = await query
+                .SelectMany(t => t.Tags)
+                .Select(t => t.Name)
+                .Distinct()
+                .ToListAsync();
+
+            tag = string.IsNullOrWhiteSpace(tag)
+                ? null
+                : TransactionTagNames.NormalizeWhitespace(tag);
+
+            if (tag is not null)
+            {
+                if (tag.Length > 80)
+                {
+                    return BadRequest();
+                }
+
+                var normalizedTag =
+                    TransactionTagNames.Normalize(tag);
+
+                query = query.Where(t =>
+                    t.Tags.Any(transactionTag =>
+                        transactionTag.NormalizedName == normalizedTag));
+            }
+
+            var transactions = await query
                 .Include(t => t.Account)
-                .Where(t => t.Account.UserId == userId)
+                .Include(t => t.Tags)
                 .OrderByDescending(t => t.Date)
                 .ThenByDescending(t => t.Id)
                 .ToListAsync();
 
-            return View(transactions);
+            var model = new TransactionListViewModel
+            {
+                Transactions = transactions,
+
+                AvailableTags = availableTags
+                    .DistinctBy(TransactionTagNames.Normalize)
+                    .OrderBy(t => t, StringComparer.OrdinalIgnoreCase)
+                    .ToList(),
+
+                Tag = tag
+            };
+
+            return View(model);
         }
 
         [HttpGet]
@@ -83,6 +124,16 @@ namespace TheAccountant.Web.Controllers
                     "Select a valid account.");
             }
 
+            if (!TransactionTagNames.TryParse(
+                model.TagsText,
+                out var tagNames,
+                out var tagError))
+            {
+                ModelState.AddModelError(
+                    nameof(model.TagsText),
+                    tagError!);
+            }
+
             if (!ModelState.IsValid)
             {
                 await PopulateAccountOptionsAsync(model);
@@ -106,6 +157,8 @@ namespace TheAccountant.Web.Controllers
                 Source = TransactionSource.Manual,
                 CreatedUtc = DateTime.UtcNow
             };
+
+            TransactionTagNames.Apply(transaction, tagNames);
 
             _context.Transactions.Add(transaction);
 
@@ -157,6 +210,7 @@ namespace TheAccountant.Web.Controllers
             var transaction = await _context.Transactions
                 .AsNoTracking()
                 .Include(t => t.Account)
+                .Include(t => t.Tags)
                 .FirstOrDefaultAsync(t =>
                     t.Id == id &&
                     t.Account.UserId == userId);
@@ -185,7 +239,12 @@ namespace TheAccountant.Web.Controllers
                 Category = transaction.Category,
                 IsPending = transaction.IsPending,
                 IsRecurring = transaction.IsRecurring,
-                Notes = transaction.Notes
+                Notes = transaction.Notes,
+                TagsText = string.Join(
+                    ", ",
+                    transaction.Tags
+                        .OrderBy(t => t.Name)
+                        .Select(t => t.Name)),
             };
 
             await PopulateAccountOptionsAsync(model);
@@ -196,8 +255,8 @@ namespace TheAccountant.Web.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(
-    int id,
-    TransactionViewModel model)
+                int id,
+                TransactionViewModel model)
         {
             if (id != model.Id)
             {
@@ -223,6 +282,16 @@ namespace TheAccountant.Web.Controllers
                     "Select a valid account.");
             }
 
+            if (!TransactionTagNames.TryParse(
+                model.TagsText,
+                out var tagNames,
+                out var tagError))
+            {
+                ModelState.AddModelError(
+                    nameof(model.TagsText),
+                    tagError!);
+            }
+
             if (!ModelState.IsValid)
             {
                 await PopulateAccountOptionsAsync(model);
@@ -232,6 +301,7 @@ namespace TheAccountant.Web.Controllers
 
             var transaction = await _context.Transactions
                 .Include(t => t.Account)
+                .Include(t => t.Tags)
                 .FirstOrDefaultAsync(t =>
                     t.Id == id &&
                     t.Account.UserId == userId);
@@ -250,7 +320,7 @@ namespace TheAccountant.Web.Controllers
                 model.Direction == TransactionDirection.Expense
                     ? -Math.Abs(model.Amount)
                     : Math.Abs(model.Amount);
-
+            TransactionTagNames.Apply(transaction, tagNames);
             transaction.Category = model.Category?.Trim();
             transaction.IsPending = model.IsPending;
             transaction.IsRecurring = model.IsRecurring;
@@ -289,6 +359,93 @@ namespace TheAccountant.Web.Controllers
 
             return RedirectToAction(nameof(Index));
         }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateCategory(
+    int id,
+    string category)
+        {
+            var userId = _userManager.GetUserId(User);
 
+            if (userId is null)
+            {
+                return Challenge();
+            }
+
+            if (string.IsNullOrWhiteSpace(category) ||
+                !TransactionCategories.All.Contains(
+                    category,
+                    StringComparer.OrdinalIgnoreCase))
+            {
+                TempData["Error"] =
+                    "Select a valid category.";
+
+                return RedirectToAction(nameof(Index));
+            }
+
+            var transaction = await _context.Transactions
+                .Include(t => t.Account)
+                .FirstOrDefaultAsync(t =>
+                    t.Id == id &&
+                    t.Account.UserId == userId);
+
+            if (transaction is null)
+            {
+                return NotFound();
+            }
+
+            transaction.Category = category;
+
+            await _context.SaveChangesAsync();
+
+            TempData["Success"] =
+                $"{transaction.Description} categorized as {category}.";
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateTags(
+    int id,
+    string? tagsText,
+    string? tag)
+        {
+            var userId = _userManager.GetUserId(User);
+
+            if (userId is null)
+            {
+                return Challenge();
+            }
+
+            var transaction = await _context.Transactions
+                .Include(t => t.Tags)
+                .FirstOrDefaultAsync(t =>
+                    t.Id == id &&
+                    t.Account.UserId == userId);
+
+            if (transaction is null)
+            {
+                return NotFound();
+            }
+
+            if (!TransactionTagNames.TryParse(
+                tagsText,
+                out var names,
+                out var error))
+            {
+                TempData["Error"] = error;
+
+                return RedirectToAction(nameof(Index), new { tag });
+            }
+
+            TransactionTagNames.Apply(transaction, names);
+
+            await _context.SaveChangesAsync();
+
+            TempData["Success"] = "Transaction tags saved.";
+
+            return RedirectToAction(nameof(Index), new { tag });
+        }
     }
 }
