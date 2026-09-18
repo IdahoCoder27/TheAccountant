@@ -93,18 +93,12 @@
     </div>
 
     <div class="form-group">
-        <label asp-for="TagsText" class="form-label"></label>
-
-        <input asp-for="TagsText"
-               class="form-control"
-               placeholder="Europe 2026, Anniversary"
-               maxlength="1000"
-               aria-describedby="tagsHelp" />
-
-        <div id="tagsHelp" class="form-text">
-            Separate tags with commas.
-            Up to 10 tags, 80 characters each.
-        </div>
+        <partial name="_TagPicker"
+                 model="@(new TheAccountant.Web.Models.ViewModels.TagPickerViewModel
+                 {
+                     Value = Model.TagsText,
+                     AvailableTags = Model.AvailableTags
+                 })" />
 
         <span asp-validation-for="TagsText"
               class="text-danger small"></span>

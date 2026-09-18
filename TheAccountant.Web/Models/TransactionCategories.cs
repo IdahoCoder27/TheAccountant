@@ -6,6 +6,7 @@
         [
             "Income",
             "Transfer",
+            "Refund",
             "Groceries",
             "Dining",
             "Fuel",

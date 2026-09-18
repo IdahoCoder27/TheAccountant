@@ -1,0 +1,98 @@
+﻿@model TheAccountant.Web.Models.ViewModels.TagPickerViewModel
+
+<div id="@Model.Id" class="tag-picker" data-tag-picker>
+    <div data-tag-fallback>
+        <label for="@(Model.Id)-value" class="form-label">Tags</label>
+
+        @Html.TextBox(Model.FieldName, Model.Value, new
+        {
+            id = Model.Id + "-value",
+            @class = "form-control",
+            maxlength = "1000",
+            data_tag_value = "",
+            aria_describedby = Model.Id + "-fallback-help"
+        })
+
+        <div id="@(Model.Id)-fallback-help" class="form-text">
+            Separate tags with commas. Up to 10 tags, 80 characters each.
+        </div>
+    </div>
+
+    <select data-tag-catalog hidden aria-hidden="true" tabindex="-1">
+        @foreach (var name in Model.AvailableTags)
+        {
+            <option value="@name">@name</option>
+        }
+    </select>
+
+    <fieldset data-tag-controls hidden>
+        <legend class="form-label">
+            Tags
+            <span class="tag-picker-count" data-tag-count></span>
+        </legend>
+
+        <div class="tag-picker-selected"
+             data-tag-selected
+             aria-label="Selected tags"></div>
+
+        <details class="tag-picker-menu" data-tag-menu>
+            <summary class="form-select"
+                     aria-describedby="@(Model.Id)-help">
+                Choose existing tags
+            </summary>
+
+            <div class="tag-picker-dropdown">
+                <label for="@(Model.Id)-search" class="visually-hidden">
+                    Search existing tags
+                </label>
+
+                <input id="@(Model.Id)-search"
+                       type="search"
+                       class="form-control"
+                       data-tag-search
+                       placeholder="Search tags…"
+                       autocomplete="off" />
+
+                <div class="tag-picker-options" data-tag-options></div>
+
+                <p class="tag-picker-empty" data-tag-empty hidden></p>
+            </div>
+        </details>
+
+        <label for="@(Model.Id)-new" class="form-label mt-3">
+            Add new tag
+        </label>
+
+        <div class="input-group">
+            <input id="@(Model.Id)-new"
+                   type="text"
+                   class="form-control"
+                   data-tag-new
+                   maxlength="80"
+                   placeholder="e.g. Europe 2026"
+                   autocomplete="off"
+                   aria-describedby="@(Model.Id)-error @(Model.Id)-help" />
+
+            <button type="button"
+                    class="btn btn-account-primary"
+                    data-tag-add>
+                Add
+            </button>
+        </div>
+
+        <div id="@(Model.Id)-error"
+             class="text-danger small mt-1"
+             data-tag-error
+             role="alert"
+             hidden></div>
+
+        <div id="@(Model.Id)-help" class="form-text">
+            Choose up to 10 tags. Changes are applied when you save the transaction.
+        </div>
+
+        <span class="visually-hidden"
+              data-tag-status
+              role="status"
+              aria-live="polite"></span>
+    </fieldset>
+</div>

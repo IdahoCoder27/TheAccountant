@@ -18,6 +18,11 @@
           href="~/css/app.css"
           asp-append-version="true" />
 
+    <link rel="stylesheet"
+          href="~/css/tag-picker.css"
+          asp-append-version="true" />
+
+
     @await RenderSectionAsync("Styles", required: false)
 
     <script>
@@ -135,6 +140,7 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/app.js" asp-append-version="true"></script>
     <script src="~/lib/chart.js/chart.umd.min.js"></script>
+    <script src="~/js/tag-picker.js" asp-append-version="true"></script>
 
     @await RenderSectionAsync(
         "Scripts",

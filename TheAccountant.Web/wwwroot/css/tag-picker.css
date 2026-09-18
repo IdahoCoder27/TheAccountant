@@ -1,0 +1,167 @@
+﻿.tag-picker {
+    min-width: 0;
+}
+
+    .tag-picker [hidden] {
+        display: none !important;
+    }
+
+    .tag-picker fieldset {
+        min-width: 0;
+    }
+
+    .tag-picker legend {
+        float: none;
+        width: auto;
+        font-size: inherit;
+    }
+
+.tag-picker-count {
+    margin-left: .5rem;
+    color: var(--text-secondary);
+    font-size: .8rem;
+    font-weight: normal;
+}
+
+.tag-picker-selected {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .5rem;
+    min-height: 2.5rem;
+    margin-bottom: .5rem;
+}
+
+.tag-picker-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    max-width: 100%;
+    padding: .2rem .35rem .2rem .75rem;
+    border: 1px solid var(--border);
+    border-radius: 1rem;
+    background: var(--surface-hover);
+    color: var(--text-primary);
+    font-size: .875rem;
+}
+
+    .tag-picker-chip span {
+        overflow-wrap: anywhere;
+        min-width: 0;
+    }
+
+.tag-picker-remove {
+    flex: 0 0 auto;
+    border: 0;
+    border-radius: 50%;
+    width: 1.75rem;
+    height: 1.75rem;
+    background: transparent;
+    color: inherit;
+    font-size: 1.2rem;
+    line-height: 1;
+}
+
+    .tag-picker-remove:hover {
+        background: var(--border);
+    }
+
+.tag-picker-menu {
+    position: relative;
+}
+
+    .tag-picker-menu summary {
+        position: relative;
+        padding-right: 2.5rem;
+        cursor: pointer;
+        list-style: none;
+    }
+
+        .tag-picker-menu summary::after {
+            content: "";
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: .5rem;
+            height: .5rem;
+            border-right: 2px solid currentColor;
+            border-bottom: 2px solid currentColor;
+            transform: rotate(45deg);
+        }
+
+    .tag-picker-menu[open] summary::after {
+        top: 1.2rem;
+        transform: rotate(225deg);
+    }
+
+    .tag-picker-menu summary::-webkit-details-marker {
+        display: none;
+    }
+
+.tag-picker-dropdown {
+    position: absolute;
+    top: calc(100% + .25rem);
+    left: 0;
+    right: 0;
+    z-index: 10;
+    padding: .75rem;
+    border: 1px solid var(--border);
+    border-radius: .6rem;
+    background: var(--surface-solid);
+    box-shadow: var(--shadow);
+}
+
+.tag-picker-options {
+    max-height: 12rem;
+    overflow-y: auto;
+    margin-top: .5rem;
+}
+
+.tag-picker-option {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    padding: .6rem .4rem;
+    border-radius: .35rem;
+    cursor: pointer;
+    color: var(--text-primary);
+    overflow-wrap: anywhere;
+}
+
+    .tag-picker-option:hover,
+    .tag-picker-option:focus-within {
+        background: var(--surface-hover);
+    }
+
+    .tag-picker-option input {
+        flex: 0 0 auto;
+        accent-color: var(--accent);
+        width: 1rem;
+        height: 1rem;
+    }
+
+    .tag-picker-option span {
+        min-width: 0;
+    }
+
+.tag-picker .form-control:focus {
+    background-color: var(--surface-solid);
+    color: var(--text-primary);
+}
+
+.tag-picker .form-control::placeholder {
+    color: var(--text-secondary);
+    opacity: 1;
+}
+
+.tag-picker-empty {
+    margin: .4rem 0;
+    color: var(--text-secondary);
+    font-size: .875rem;
+}
+
+.tag-picker summary:focus-visible,
+.tag-picker-remove:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}

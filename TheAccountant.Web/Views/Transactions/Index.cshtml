@@ -479,8 +479,8 @@
 
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content category-modal">
-
             <form asp-action="UpdateTags" method="post">
+
                 <div class="modal-header">
                     <h5 class="modal-title" id="tagsModalLabel">
                         Transaction tags
@@ -496,30 +496,21 @@
                 <div class="modal-body">
                     <input type="hidden"
                            id="tagsTransactionId"
+                           data-tag-transaction-id
                            name="id" />
 
                     <input type="hidden"
                            name="tag"
                            value="@Model.Tag" />
 
-                    <p id="tagsDescription"></p>
+                    <p id="tagsDescription" data-tag-description></p>
 
-                    <label for="tagsText" class="form-label">
-                        Tags
-                    </label>
-
-                    <input id="tagsText"
-                           name="tagsText"
-                           class="form-control"
-                           maxlength="1000"
-                           placeholder="Europe 2026, Anniversary"
-                           aria-describedby="tagModalHelp" />
-
-                    <div id="tagModalHelp" class="form-text">
-                        Separate tags with commas.
-                        Up to 10 tags, 80 characters each.
-                        Clear the field to remove all tags.
-                    </div>
+                    <partial name="_TagPicker"
+                             model="@(new TheAccountant.Web.Models.ViewModels.TagPickerViewModel
+                             {
+                                 Id = "modalTags",
+                                 AvailableTags = Model.AvailableTags
+                             })" />
                 </div>
 
                 <div class="modal-footer">
@@ -535,30 +526,7 @@
                     </button>
                 </div>
             </form>
-
         </div>
     </div>
 </div>
 
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const modal = document.getElementById("tagsModal");
-
-        modal.addEventListener("show.bs.modal", function(event) {
-            const button = event.relatedTarget;
-
-            document.getElementById("tagsTransactionId").value =
-                button.dataset.transactionId;
-
-            document.getElementById("tagsDescription").textContent =
-                button.dataset.description;
-
-            document.getElementById("tagsText").value =
-                button.dataset.tags || "";
-        });
-
-        modal.addEventListener("shown.bs.modal", function() {
-            document.getElementById("tagsText").focus();
-        });
-    });
-</script>

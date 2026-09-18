@@ -5,10 +5,10 @@
 }
 
 <div class="account-form-page">
-
     <div class="account-form-header">
         <div>
             <h2 class="section-title">Add Transaction</h2>
+
             <p class="section-subtitle">
                 Add a transaction manually for one of your accounts.
             </p>
@@ -22,7 +22,6 @@
     </div>
 
     <div class="account-form-card glass-card">
-
         <form asp-controller="Transactions"
               asp-action="Create"
               method="post">
@@ -32,153 +31,9 @@
                  role="alert">
             </div>
 
-            <div class="form-grid">
-
-                <div class="form-group">
-                    <label asp-for="AccountId"
-                           class="form-label">
-                    </label>
-
-                    <select asp-for="AccountId"
-                            asp-items="Model.AccountOptions"
-                            class="form-select">
-
-                        <option value="">Select an account</option>
-
-                    </select>
-
-                    <span asp-validation-for="AccountId"
-                          class="text-danger small">
-                    </span>
-                </div>
-
-                <div class="form-group">
-                    <label asp-for="Date"
-                           class="form-label">
-                    </label>
-
-                    <input asp-for="Date"
-                           class="form-control" />
-
-                    <span asp-validation-for="Date"
-                          class="text-danger small">
-                    </span>
-                </div>
-
-                <div class="form-group">
-                    <label asp-for="Description"
-                           class="form-label">
-                    </label>
-
-                    <input asp-for="Description"
-                           class="form-control"
-                           placeholder="e.g. Albertsons #1234" />
-
-                    <span asp-validation-for="Description"
-                          class="text-danger small">
-                    </span>
-                </div>
-
-                <div class="form-group">
-                    <label asp-for="Merchant"
-                           class="form-label">
-                    </label>
-
-                    <input asp-for="Merchant"
-                           class="form-control"
-                           placeholder="e.g. Albertsons" />
-
-                    <span asp-validation-for="Merchant"
-                          class="text-danger small">
-                    </span>
-                </div>
-
-                <div class="form-group">
-                    <label asp-for="Amount"
-                           class="form-label">
-                    </label>
-
-                    <div class="input-group">
-                        <span class="input-group-text">$</span>
-
-                        <input asp-for="Amount"
-                               class="form-control"
-                               inputmode="decimal"
-                               placeholder="-83.16" />
-                    </div>
-
-                    <div class="form-text">
-                        Expenses are negative. Income and deposits are positive.
-                    </div>
-
-                    <span asp-validation-for="Amount"
-                          class="text-danger small">
-                    </span>
-                </div>
-
-                <div class="form-group">
-                    <label asp-for="Category"
-                           class="form-label">
-                    </label>
-
-                    <input asp-for="Category"
-                           class="form-control"
-                           placeholder="e.g. Groceries" />
-
-                    <span asp-validation-for="Category"
-                          class="text-danger small">
-                    </span>
-                </div>
-
-                <div class="form-group">
-                    <label asp-for="Notes"
-                           class="form-label">
-                    </label>
-
-                    <textarea asp-for="Notes"
-                              class="form-control"
-                              rows="4"
-                              placeholder="Optional notes"></textarea>
-
-                    <span asp-validation-for="Notes"
-                          class="text-danger small">
-                    </span>
-                </div>
-
-                <div class="form-group">
-
-                    <label class="form-label">
-                        Status
-                    </label>
-
-                    <div class="transaction-options">
-
-                        <div class="form-check">
-                            <input asp-for="IsPending"
-                                   class="form-check-input" />
-
-                            <label asp-for="IsPending"
-                                   class="form-check-label">
-                            </label>
-                        </div>
-
-                        <div class="form-check">
-                            <input asp-for="IsRecurring"
-                                   class="form-check-input" />
-
-                            <label asp-for="IsRecurring"
-                                   class="form-check-label">
-                            </label>
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
+            <partial name="_TransactionForm" model="Model" />
 
             <div class="form-actions">
-
                 <a asp-controller="Transactions"
                    asp-action="Index"
                    class="btn btn-outline-secondary">
@@ -189,13 +44,9 @@
                         class="btn btn-account-primary">
                     Add Transaction
                 </button>
-
             </div>
-
         </form>
-
     </div>
-
 </div>
 
 @section Scripts {

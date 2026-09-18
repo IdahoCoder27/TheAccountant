@@ -39,11 +39,7 @@ namespace TheAccountant.Web.Controllers
                 .AsNoTracking()
                 .Where(t => t.Account.UserId == userId);
 
-            var availableTags = await query
-                .SelectMany(t => t.Tags)
-                .Select(t => t.Name)
-                .Distinct()
-                .ToListAsync();
+            var availableTags = await GetAvailableTagNamesAsync(userId);
 
             tag = string.IsNullOrWhiteSpace(tag)
                 ? null
@@ -74,12 +70,7 @@ namespace TheAccountant.Web.Controllers
             var model = new TransactionListViewModel
             {
                 Transactions = transactions,
-
-                AvailableTags = availableTags
-                    .DistinctBy(TransactionTagNames.Normalize)
-                    .OrderBy(t => t, StringComparer.OrdinalIgnoreCase)
-                    .ToList(),
-
+                AvailableTags = availableTags,
                 Tag = tag
             };
 
@@ -94,7 +85,7 @@ namespace TheAccountant.Web.Controllers
                 Date = DateTime.Today
             };
 
-            await PopulateAccountOptionsAsync(model);
+            await PopulateFormOptionsAsync(model);
 
             return View(model);
         }
@@ -136,7 +127,7 @@ namespace TheAccountant.Web.Controllers
 
             if (!ModelState.IsValid)
             {
-                await PopulateAccountOptionsAsync(model);
+                await PopulateFormOptionsAsync(model);
 
                 return View(model);
             }
@@ -167,8 +158,8 @@ namespace TheAccountant.Web.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        private async Task PopulateAccountOptionsAsync(
-            TransactionViewModel model)
+        private async Task PopulateFormOptionsAsync(
+    TransactionViewModel model)
         {
             var userId = _userManager.GetUserId(User);
 
@@ -195,6 +186,24 @@ namespace TheAccountant.Web.Controllers
                             : "")
                 })
                 .ToListAsync();
+
+            model.AvailableTags = await GetAvailableTagNamesAsync(userId);
+        }
+
+        private async Task<List<string>> GetAvailableTagNamesAsync(
+            string userId)
+        {
+            var names = await _context.TransactionTags
+                .AsNoTracking()
+                .Where(t => t.Transaction.Account.UserId == userId)
+                .Select(t => t.Name)
+                .Distinct()
+                .ToListAsync();
+
+            return names
+                .DistinctBy(TransactionTagNames.Normalize)
+                .OrderBy(name => name, StringComparer.OrdinalIgnoreCase)
+                .ToList();
         }
 
         [HttpGet]
@@ -247,7 +256,7 @@ namespace TheAccountant.Web.Controllers
                         .Select(t => t.Name)),
             };
 
-            await PopulateAccountOptionsAsync(model);
+            await PopulateFormOptionsAsync(model);
 
             return View(model);
         }
@@ -294,7 +303,7 @@ namespace TheAccountant.Web.Controllers
 
             if (!ModelState.IsValid)
             {
-                await PopulateAccountOptionsAsync(model);
+                await PopulateFormOptionsAsync(model);
 
                 return View(model);
             }

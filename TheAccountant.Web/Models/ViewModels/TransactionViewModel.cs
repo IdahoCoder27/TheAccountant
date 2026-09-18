@@ -48,5 +48,6 @@ namespace TheAccountant.Web.Models.ViewModels
         public string? TagsText { get; set; }
 
         public List<SelectListItem> AccountOptions { get; set; } = new();
+        public List<string> AvailableTags { get; set; } = new();
     }
 }
